@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Volume II: Daily Workings | Grimoire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+Double+Pica&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --parchment: #f4e8d0;
+            --ink-dark: #2a1810;
+            --ink-medium: #4a3020;
+            --ink-faded: #6a5040;
+            --illumination: #8b4513;
+            --gold-leaf: #c9a456;
+            --crimson: #8b1a1a;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--parchment);
+            color: var(--ink-dark);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            -webkit-font-smoothing: antialiased;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(139, 69, 19, 0.02) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(139, 69, 19, 0.02) 3px
+                ),
+                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.03) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .manuscript {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(244, 232, 208, 0.95);
+            box-shadow: 
+                0 2px 8px rgba(42, 24, 16, 0.15),
+                inset 0 0 60px rgba(139, 69, 19, 0.03);
+            border: 1px solid rgba(139, 69, 19, 0.2);
+            position: relative;
+        }
+
+        .manuscript::before,
+        .manuscript::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--illumination) 50%, transparent);
+            opacity: 0.3;
+        }
+
+        .manuscript::before { top: 0; }
+        .manuscript::after { bottom: 0; }
+
+        .page {
+            padding: 2rem 1.5rem;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+        }
+
+        .nav-button {
+            font-family: 'IM Fell English', serif;
+            background: none;
+            border: 1px solid var(--gold-leaf);
+            color: var(--ink-dark);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:active {
+            background: rgba(201, 164, 86, 0.2);
+            transform: scale(0.98);
+        }
+
+        .volume-indicator {
+            font-family: 'IM Fell Double Pica', serif;
+            color: var(--crimson);
+            font-size: 1.5rem;
+        }
+
+        .chapter-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gold-leaf);
+        }
+
+        .chapter-number {
+            font-family: 'IM Fell Double Pica', serif;
+            font-size: 3rem;
+            line-height: 1;
+            color: var(--crimson);
+            text-shadow: 1px 1px 0 var(--gold-leaf);
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-title {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.8rem;
+            color: var(--ink-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-subtitle {
+            font-style: italic;
+            color: var(--ink-faded);
+            font-size: 1rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.3rem;
+            color: var(--illumination);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: '✦';
+            color: var(--gold-leaf);
+        }
+
+        .paragraph {
+            margin-bottom: 1rem;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        .marginal-note {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--ink-faded);
+            background: rgba(139, 69, 19, 0.05);
+            padding: 0.75rem;
+            border-left: 2px solid var(--gold-leaf);
+            margin: 1.5rem 0;
+        }
+
+        .tea-blend {
+            background: rgba(255, 253, 248, 0.6);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(139, 69, 19, 0.15);
+            box-shadow: 2px 2px 6px rgba(42, 24, 16, 0.08);
+        }
+
+        .blend-name {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            color: var(--crimson);
+            margin-bottom: 0.5rem;
+        }
+
+        .blend-purpose {
+            font-weight: 600;
+            color: var(--ink-medium);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .blend-ingredients {
+            margin: 0.75rem 0;
+        }
+
+        .ingredient-list {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .ingredient-list li {
+            padding: 0.25rem 0;
+            position: relative;
+        }
+
+        .ingredient-list li::before {
+            content: '•';
+            position: absolute;
+            left: -1rem;
+            color: var(--gold-leaf);
+        }
+
+        .esperanto {
+            display: block;
+            font-style: italic;
+            color: var(--illumination);
+            margin-top: 0.75rem;
+        }
+
+        .practice-card {
+            background: rgba(139, 69, 19, 0.05);
+            border-left: 3px solid var(--gold-leaf);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        .practice-title {
+            font-weight: 600;
+            color: var(--ink-dark);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bottom-nav {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid rgba(139, 69, 19, 0.2);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(139, 69, 19, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--illumination);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="manuscript">
+        <div class="page">
+            <nav class="nav">
+                <a href="grimoire-index.html" class="nav-button">← Index</a>
+                <span class="volume-indicator">II</span>
+                <a href="grimoire-volume-3.html" class="nav-button">Vol III →</a>
+            </nav>
+
+            <div class="chapter-header">
+                <div class="chapter-number">II</div>
+                <h1 class="chapter-title">Daily Workings</h1>
+                <p class="chapter-subtitle">Tea Studies & Regular Observances</p>
+            </div>
+
+            <section class="section">
+                <h2 class="section-title">Tea Studies</h2>
+                
+                <p class="paragraph">
+                    Tea making is alchemy—water transforms leaf into medicine. The preparation itself is the working. Each cup becomes a vessel for intention, a liquid carrier of will. Through tea, the Scribe practices daily magic that nourishes both body and purpose.
+                </p>
+
+                <div class="marginal-note">
+                    Begin simply. Even plain tea with honey and clear intention is valid. As your practice deepens, expand your herbal vocabulary.
+                </div>
+
+                <div class="tea-blend">
+                    <div class="blend-name">🌅 Morning Clarity Tea</div>
+                    <div class="blend-purpose">Purpose: Mental focus, energy, optimistic beginning</div>
+                    <div class="blend-ingredients">
+                        <strong>Ingredients:</strong>
+                        <ul class="ingredient-list">
+                            <li>Green tea or yerba mate (energy, alertness)</li>
+                            <li>Peppermint (clarity, digestive aid)</li>
+                            <li>Lemon balm (calm focus, mood lift)</li>
+                            <li>Ginger (circulation, warmth)</li>
+                            <li>Optional: honey for sweetness</li>
+                        </ul>
+                    </div>
+                    <p><strong>When to Use:</strong> Upon waking, before beginning work, at sunrise</p>
+                    <span class="esperanto">"Mi vekiĝas kun saĝo kaj forto"</span>
+                    <em style="color: var(--ink-medium);">(I wake with wisdom and strength)</em>
+                </div>
+
+                <div class="tea-blend">
+                    <div class="blend-name">🌙 Evening Reflection Tea</div>
+                    <div class="blend-purpose">Purpose: Contemplation, integration, peaceful closure</div>
+                    <div class="blend-ingredients">
+                        <strong>Ingredients:</strong>
+                        <ul class="ingredient-list">
+                            <li>Chamomile (peace, reflection)</li>
+                            <li>Lavender (calm, spiritual awareness)</li>
+                            <li>Passionflower (letting go, surrender)</li>
+                            <li>Rose petals (self-love, completion)</li>
+                            <li>Optional: honey or maple syrup</li>
+                        </ul>
+                    </div>
+                    <p><strong>When to Use:</strong> End of day, after completing workings, before rest</p>
+                    <span class="esperanto">"Mi honoras la tagon kaj akceptas la nokton"</span>
+                    <em style="color: var(--ink-medium);">(I honor the day and accept the night)</em>
+                </div>
+
+                <div class="tea-blend">
+                    <div class="blend-name">📚 Study Session Tea</div>
+                    <div class="blend-purpose">Purpose: Enhanced concentration during 30-minute hourglass sessions</div>
+                    <div class="blend-ingredients">
+                        <strong>Ingredients:</strong>
+                        <ul class="ingredient-list">
+                            <li>Ginkgo (memory, cognitive function)</li>
+                            <li>Gotu kola (mental clarity, focus)</li>
+                            <li>Rosemary (memory, Thoth's herb)</li>
+                            <li>Black or oolong tea (sustained attention)</li>
+                        </ul>
+                    </div>
+                    <p><strong>When to Use:</strong> Before hourglass sessions, during research</p>
+                    <span class="esperanto">"Scio fluas tra mi"</span>
+                    <em style="color: var(--ink-medium);">(Knowledge flows through me)</em>
+                </div>
+
+                <div class="tea-blend">
+                    <div class="blend-name">🛡️ Grounding & Protection Tea</div>
+                    <div class="blend-purpose">Purpose: Establishing boundaries, feeling safe and centered</div>
+                    <div class="blend-ingredients">
+                        <strong>Ingredients:</strong>
+                        <ul class="ingredient-list">
+                            <li>Rooibos (grounding, root connection)</li>
+                            <li>Cinnamon (protective fire)</li>
+                            <li>Clove (boundary setting)</li>
+                            <li>Licorice root (strength, sweetness)</li>
+                            <li>Black pepper (energetic barrier)</li>
+                        </ul>
+                    </div>
+                    <p><strong>When to Use:</strong> When feeling vulnerable, before difficult conversations, establishing workspace</p>
+                    <span class="esperanto">"Mi estas protektita, mi estas fortika"</span>
+                    <em style="color: var(--ink-medium);">(I am protected, I am strong)</em>
+                </div>
+
+                <div class="tea-blend">
+                    <div class="blend-name">✨ Manifestation Tea</div>
+                    <div class="blend-purpose">Purpose: Support ongoing manifestation workings</div>
+                    <div class="blend-ingredients">
+                        <strong>Ingredients:</strong>
+                        <ul class="ingredient-list">
+                            <li>Green tea (growth, new beginnings)</li>
+                            <li>Cinnamon (speed, success)</li>
+                            <li>Orange peel (abundance, joy)</li>
+                            <li>Ginger (energy, manifestation power)</li>
+                            <li>Cardamom (clarity of desire)</li>
+                        </ul>
+                    </div>
+                    <p><strong>When to Use:</strong> While manifestation scroll bottles are active, during new moon workings</p>
+                    <span class="esperanto">"Tio, kion mi deziras, venas al mi"</span>
+                    <em style="color: var(--ink-medium);">(That which I desire comes to me)</em>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">The 30-Minute Hourglass Session</h2>
+                
+                <p class="paragraph">
+                    Each day, the Scribe dedicates one hourglass turn to handwritten study. This is not meditation in stillness, but meditation through action—the moving meditation of ink on paper. Like a monk in a scriptorium, you preserve knowledge by writing it.
+                </p>
+
+                <div class="practice-card">
+                    <div class="practice-title">Session Protocol:</div>
+                    
+                    <p style="margin: 0.75rem 0;"><strong>Before Beginning:</strong></p>
+                    <ul class="ingredient-list">
+                        <li>Brew your Study Session Tea</li>
+                        <li>Light Ma'at's white quill (if using candles)</li>
+                        <li>Open your grimoire notebook</li>
+                        <li>Turn the hourglass</li>
+                    </ul>
+
+                    <p style="margin: 0.75rem 0;"><strong>During the Session:</strong></p>
+                    <ul class="ingredient-list">
+                        <li>Write continuously until sand runs out</li>
+                        <li>Document: insights, philosophies, learnings from the day</li>
+                        <li>No digital devices—only paper and pen</li>
+                        <li>Let thoughts flow through hand to page</li>
+                    </ul>
+
+                    <p style="margin: 0.75rem 0;"><strong>After Completion:</strong></p>
+                    <ul class="ingredient-list">
+                        <li>Close your notebook with gratitude</li>
+                        <li>Extinguish candle if used</li>
+                        <li>Place pen back in studiolo</li>
+                    </ul>
+                </div>
+
+                <div class="marginal-note">
+                    This practice serves dual purposes: it preserves your wisdom in permanent form (honoring Thoth) while providing the contemplative breathing space your mind requires.
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Regular Observances</h2>
+                
+                <p class="paragraph">
+                    These are the small workings that accumulate into a life of practice:
+                </p>
+
+                <div class="practice-card">
+                    <div class="practice-title">Charging Talismans</div>
+                    <p>Hold object whilst concentrating intention. The focused will imprints upon matter. Do this whenever you feel your talismans need renewal.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-title">Inscribing Symbols</div>
+                    <p>Egyptian hieroglyphs, alchemical symbols, or sacred geometry. The act of writing channels Thoth's influence. Practice in margins of your grimoire or on separate parchment.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-title">Arranging Shrine Objects</div>
+                    <p>Placement communicates with divine forces. Intentional arrangement equals prayer without words. Adjust your studiolo when its energy feels stagnant.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-title">Stirring Deosil</div>
+                    <p>Clockwise stirring while holding intent. Whether tea, potions, or cooking—the motion matters. Deosil (sunwise) for manifestation and growth.</p>
+                </div>
+            </section>
+
+            <nav class="bottom-nav">
+                <a href="grimoire-volume-1.html" class="nav-button">← Vol I</a>
+                <a href="grimoire-volume-3.html" class="nav-button">Volume III →</a>
+            </nav>
+        </div>
+    </div>
+</body>
+</html>
