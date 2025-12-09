@@ -92,6 +92,24 @@
             transform: scale(0.95);
         }
 
+        /* Desktop: show keyboard shortcuts */
+        @media (min-width: 768px) {
+            .tool-btn {
+                position: relative;
+            }
+            
+            .tool-btn::after {
+                content: attr(data-key);
+                position: absolute;
+                bottom: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 0.7rem;
+                opacity: 0.6;
+                white-space: nowrap;
+            }
+        }
+
         .moon-display {
             color: var(--parchment);
             font-family: 'IM Fell English', serif;
@@ -133,6 +151,14 @@
             width: 100%;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             position: relative;
+        }
+
+        /* Desktop: larger modals */
+        @media (min-width: 768px) {
+            .modal-content {
+                max-width: 500px;
+                padding: 2.5rem;
+            }
         }
 
         .modal-close {
@@ -272,6 +298,27 @@
             position: relative;
         }
 
+        /* Desktop responsive styles */
+        @media (min-width: 768px) {
+            .manuscript {
+                max-width: 700px;
+            }
+            
+            .page {
+                padding: 3rem 2.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .manuscript {
+                max-width: 900px;
+            }
+            
+            .page {
+                padding: 3.5rem 3rem;
+            }
+        }
+
         body.dark-mode .manuscript {
             background: rgba(26, 20, 16, 0.95);
         }
@@ -320,6 +367,17 @@
             letter-spacing: 0.05em;
         }
 
+        /* Desktop: larger title */
+        @media (min-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .drop-cap {
+                font-size: 5rem;
+            }
+        }
+
         .subtitle {
             font-family: 'IM Fell English', serif;
             font-style: italic;
@@ -342,6 +400,19 @@
 
         .volumes {
             margin: 2rem 0;
+        }
+
+        /* Desktop: 2-column grid for volumes */
+        @media (min-width: 768px) {
+            .volumes {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .volume-card {
+                margin-bottom: 0;
+            }
         }
 
         .volume-card {
@@ -378,6 +449,23 @@
         .volume-card:active {
             transform: translateX(3px);
             box-shadow: 1px 1px 3px rgba(42, 24, 16, 0.12);
+        }
+
+        /* Desktop hover effects */
+        @media (hover: hover) {
+            .volume-card {
+                transition: all 0.3s ease, transform 0.2s ease;
+            }
+            
+            .volume-card:hover {
+                transform: translateX(5px);
+                box-shadow: 4px 4px 12px rgba(42, 24, 16, 0.15);
+                background: rgba(255, 250, 240, 0.8);
+            }
+            
+            body.dark-mode .volume-card:hover {
+                background: rgba(52, 45, 38, 0.8);
+            }
         }
 
         .volume-header {
@@ -429,6 +517,19 @@
         .glossary-grid {
             display: grid;
             gap: 0.75rem;
+        }
+
+        /* Desktop: multi-column glossary */
+        @media (min-width: 768px) {
+            .glossary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .glossary-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .glossary-term {
@@ -483,10 +584,10 @@
             </div>
         </div>
         <div class="toolbar-right">
-            <button class="tool-btn" onclick="openSearch()">🔍 Search</button>
-            <button class="tool-btn" onclick="openTeaTimer()">🍵 Tea</button>
-            <button class="tool-btn" onclick="openHourglass()">⏳ Study</button>
-            <button class="tool-btn" onclick="toggleDarkMode()">🌙</button>
+            <button class="tool-btn" onclick="openSearch()" data-key="Press S">🔍 Search</button>
+            <button class="tool-btn" onclick="openTeaTimer()" data-key="Press T">🍵 Tea</button>
+            <button class="tool-btn" onclick="openHourglass()" data-key="Press H">⏳ Study</button>
+            <button class="tool-btn" onclick="toggleDarkMode()" data-key="Press D">🌙</button>
         </div>
     </div>
 
@@ -826,6 +927,36 @@
             document.getElementById('searchInput').value = '';
             document.getElementById('searchResults').innerHTML = '';
         }
+
+        // Keyboard shortcuts (desktop)
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger if typing in an input
+            if (e.target.tagName === 'INPUT') return;
+            
+            switch(e.key.toLowerCase()) {
+                case 's':
+                    e.preventDefault();
+                    openSearch();
+                    break;
+                case 't':
+                    e.preventDefault();
+                    openTeaTimer();
+                    break;
+                case 'h':
+                    e.preventDefault();
+                    openHourglass();
+                    break;
+                case 'd':
+                    e.preventDefault();
+                    toggleDarkMode();
+                    break;
+                case 'escape':
+                    closeSearch();
+                    closeTeaTimer();
+                    closeHourglass();
+                    break;
+            }
+        });
         
         // Simple search index
         const searchIndex = [

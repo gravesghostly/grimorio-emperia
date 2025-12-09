@@ -15,13 +15,76 @@
         }
 
         :root {
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
             --parchment: #f4e8d0;
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
             --ink-dark: #2a1810;
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
             --ink-medium: #4a3020;
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
             --ink-faded: #6a5040;
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
             --illumination: #8b4513;
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
             --gold-leaf: #c9a456;
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
             --crimson: #8b1a1a;
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
+        }
+        }
+
+        body.dark-mode {
+            --parchment: #1a1410;
+            --ink-dark: #e8dcc8;
+            --ink-medium: #d0c0a8;
+            --ink-faded: #b8a890;
         }
 
         body {
@@ -42,17 +105,58 @@
                 radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.03) 0%, transparent 50%);
             min-height: 100vh;
             padding: 1rem;
+            transition: background 0.3s, color 0.3s;
         }
 
         .manuscript {
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
             max-width: 500px;
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
             margin: 0 auto;
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
             background: rgba(244, 232, 208, 0.95);
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
             box-shadow: 
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
                 0 2px 8px rgba(42, 24, 16, 0.15),
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
                 inset 0 0 60px rgba(139, 69, 19, 0.03);
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
             border: 1px solid rgba(139, 69, 19, 0.2);
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
             position: relative;
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
+        }
+        }
+
+        body.dark-mode .manuscript {
+            background: rgba(26, 20, 16, 0.95);
         }
 
         .manuscript::before,
@@ -313,7 +417,7 @@
     <div class="manuscript">
         <div class="page">
             <nav class="nav">
-                <a href="grimoire-index.html" class="nav-button">← Index</a>
+                <a href="index.html" class="nav-button">← Index</a>
                 <span class="volume-indicator">IV</span>
                 <a href="grimoire-volume-5.html" class="nav-button">Vol V →</a>
             </nav>
@@ -655,5 +759,11 @@
             </nav>
         </div>
     </div>
+    <script>
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </body>
 </html>
