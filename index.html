@@ -2,1004 +2,130 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Grimorio Emperia</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+Double+Pica&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --parchment: #f4e8d0;
-            --ink-dark: #2a1810;
-            --ink-medium: #4a3020;
-            --ink-faded: #6a5040;
-            --illumination: #8b4513;
-            --gold-leaf: #c9a456;
-            --crimson: #8b1a1a;
-        }
-
-        body.dark-mode {
-            --parchment: #1a1410;
-            --ink-dark: #e8dcc8;
-            --ink-medium: #d0c0a8;
-            --ink-faded: #b8a890;
-        }
-
-        body {
-            font-family: 'Cormorant Garamond', serif;
-            background: var(--parchment);
-            color: var(--ink-dark);
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-            background-image: 
-                repeating-linear-gradient(
-                    0deg,
-                    rgba(139, 69, 19, 0.02) 0px,
-                    transparent 1px,
-                    transparent 2px,
-                    rgba(139, 69, 19, 0.02) 3px
-                ),
-                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(42, 24, 16, 0.02) 0%, transparent 50%);
-            min-height: 100vh;
-            padding: 1rem;
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* Toolbar */
-        .toolbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(139, 69, 19, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 0.75rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .toolbar-left, .toolbar-right {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-
-        .tool-btn {
-            background: rgba(244, 232, 208, 0.2);
-            border: 1px solid var(--gold-leaf);
-            color: var(--parchment);
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            font-family: 'IM Fell English', serif;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tool-btn:active {
-            background: rgba(244, 232, 208, 0.4);
-            transform: scale(0.95);
-        }
-
-        /* Desktop: show keyboard shortcuts */
-        @media (min-width: 768px) {
-            .tool-btn {
-                position: relative;
-            }
-            
-            .tool-btn::after {
-                content: attr(data-key);
-                position: absolute;
-                bottom: -20px;
-                left: 50%;
-                transform: translateX(-50%);
-                font-size: 0.7rem;
-                opacity: 0.6;
-                white-space: nowrap;
-            }
-        }
-
-        .moon-display {
-            color: var(--parchment);
-            font-family: 'IM Fell English', serif;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .moon-icon {
-            font-size: 1.5rem;
-        }
-
-        /* Modal overlays */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--parchment);
-            border: 2px solid var(--gold-leaf);
-            border-radius: 8px;
-            padding: 2rem;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            position: relative;
-        }
-
-        /* Desktop: larger modals */
-        @media (min-width: 768px) {
-            .modal-content {
-                max-width: 500px;
-                padding: 2.5rem;
-            }
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--ink-dark);
-            cursor: pointer;
-        }
-
-        .modal-title {
-            font-family: 'IM Fell English', serif;
-            font-size: 1.5rem;
-            color: var(--crimson);
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        /* Tea Timer */
-        .timer-presets {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .preset-btn {
-            background: var(--illumination);
-            color: var(--parchment);
-            border: 1px solid var(--gold-leaf);
-            padding: 0.75rem;
-            border-radius: 4px;
-            font-family: 'Cormorant Garamond', serif;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .preset-btn:active {
-            transform: scale(0.95);
-        }
-
-        .timer-display {
-            font-family: 'IM Fell Double Pica', serif;
-            font-size: 3rem;
-            text-align: center;
-            color: var(--crimson);
-            margin: 1.5rem 0;
-        }
-
-        .timer-controls {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: center;
-        }
-
-        .timer-btn {
-            background: var(--gold-leaf);
-            color: var(--ink-dark);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            font-family: 'IM Fell English', serif;
-            cursor: pointer;
-        }
-
-        /* Hourglass Timer */
-        .hourglass-container {
-            text-align: center;
-        }
-
-        .hourglass-visual {
-            font-size: 5rem;
-            margin: 1rem 0;
-            animation: rotate 2s ease-in-out infinite;
-        }
-
-        @keyframes rotate {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(180deg); }
-        }
-
-        .hourglass-visual.paused {
-            animation: none;
-        }
-
-        /* Search */
-        .search-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--gold-leaf);
-            background: rgba(244, 232, 208, 0.5);
-            color: var(--ink-dark);
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-
-        .search-results {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .search-result {
-            padding: 0.75rem;
-            border-bottom: 1px solid rgba(139, 69, 19, 0.2);
-            cursor: pointer;
-        }
-
-        .search-result:hover {
-            background: rgba(201, 164, 86, 0.1);
-        }
-
-        .search-volume {
-            font-family: 'IM Fell English', serif;
-            color: var(--crimson);
-            font-size: 0.9rem;
-        }
-
-        .search-snippet {
-            color: var(--ink-medium);
-            font-size: 0.9rem;
-        }
-
-        /* Main content - offset for toolbar */
-        .manuscript {
-            max-width: 500px;
-            margin: 60px auto 0;
-            background: rgba(244, 232, 208, 0.95);
-            box-shadow: 
-                0 2px 8px rgba(42, 24, 16, 0.15),
-                inset 0 0 60px rgba(139, 69, 19, 0.03);
-            border: 1px solid rgba(139, 69, 19, 0.2);
-            position: relative;
-        }
-
-        /* Desktop responsive styles */
-        @media (min-width: 768px) {
-            .manuscript {
-                max-width: 700px;
-            }
-            
-            .page {
-                padding: 3rem 2.5rem;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .manuscript {
-                max-width: 900px;
-            }
-            
-            .page {
-                padding: 3.5rem 3rem;
-            }
-        }
-
-        body.dark-mode .manuscript {
-            background: rgba(26, 20, 16, 0.95);
-        }
-
-        .manuscript::before, .manuscript::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--illumination) 50%, transparent);
-            opacity: 0.3;
-        }
-
-        .manuscript::before { top: 0; }
-        .manuscript::after { bottom: 0; }
-
-        .page {
-            padding: 2rem 1.5rem;
-        }
-
-        .illuminated-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--gold-leaf);
-            padding-bottom: 1.5rem;
-        }
-
-        .drop-cap {
-            font-family: 'IM Fell Double Pica', serif;
-            font-size: 4rem;
-            line-height: 1;
-            color: var(--crimson);
-            text-shadow: 2px 2px 0 var(--gold-leaf);
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .title {
-            font-family: 'IM Fell English', serif;
-            font-size: 1.6rem;
-            color: var(--ink-dark);
-            line-height: 1.3;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Desktop: larger title */
-        @media (min-width: 768px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .drop-cap {
-                font-size: 5rem;
-            }
-        }
-
-        .subtitle {
-            font-family: 'IM Fell English', serif;
-            font-style: italic;
-            font-size: 1rem;
-            color: var(--ink-faded);
-            letter-spacing: 0.03em;
-        }
-
-        .epigraph {
-            font-style: italic;
-            color: var(--ink-medium);
-            text-align: center;
-            padding: 1rem 0;
-            margin: 1.5rem 0;
-            border-top: 1px solid rgba(139, 69, 19, 0.2);
-            border-bottom: 1px solid rgba(139, 69, 19, 0.2);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .volumes {
-            margin: 2rem 0;
-        }
-
-        /* Desktop: 2-column grid for volumes */
-        @media (min-width: 768px) {
-            .volumes {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
-            }
-            
-            .volume-card {
-                margin-bottom: 0;
-            }
-        }
-
-        .volume-card {
-            background: rgba(255, 253, 248, 0.6);
-            border-left: 4px solid var(--gold-leaf);
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 2px 2px 6px rgba(42, 24, 16, 0.08);
-            position: relative;
-        }
-
-        body.dark-mode .volume-card {
-            background: rgba(42, 35, 28, 0.6);
-        }
-
-        .volume-card::before {
-            content: '✦';
-            position: absolute;
-            left: -0.7rem;
-            top: 1.25rem;
-            color: var(--gold-leaf);
-            font-size: 1rem;
-            background: var(--parchment);
-            width: 1.4rem;
-            height: 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .volume-card:active {
-            transform: translateX(3px);
-            box-shadow: 1px 1px 3px rgba(42, 24, 16, 0.12);
-        }
-
-        /* Desktop hover effects */
-        @media (hover: hover) {
-            .volume-card {
-                transition: all 0.3s ease, transform 0.2s ease;
-            }
-            
-            .volume-card:hover {
-                transform: translateX(5px);
-                box-shadow: 4px 4px 12px rgba(42, 24, 16, 0.15);
-                background: rgba(255, 250, 240, 0.8);
-            }
-            
-            body.dark-mode .volume-card:hover {
-                background: rgba(52, 45, 38, 0.8);
-            }
-        }
-
-        .volume-header {
-            display: flex;
-            align-items: baseline;
-            margin-bottom: 0.5rem;
-        }
-
-        .volume-number {
-            font-family: 'IM Fell Double Pica', serif;
-            font-size: 2rem;
-            color: var(--crimson);
-            margin-right: 0.75rem;
-            line-height: 1;
-        }
-
-        .volume-title {
-            font-family: 'IM Fell English', serif;
-            font-size: 1.3rem;
-            color: var(--ink-dark);
-            font-weight: normal;
-            line-height: 1.2;
-        }
-
-        .volume-description {
-            color: var(--ink-medium);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-left: 2.75rem;
-        }
-
-        .glossary {
-            margin: 2rem 0 1.5rem;
-            padding: 1.5rem 1rem;
-            background: rgba(139, 69, 19, 0.05);
-            border: 1px solid rgba(139, 69, 19, 0.15);
-        }
-
-        .glossary-title {
-            font-family: 'IM Fell English', serif;
-            font-size: 1.1rem;
-            color: var(--illumination);
-            margin-bottom: 1rem;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .glossary-grid {
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        /* Desktop: multi-column glossary */
-        @media (min-width: 768px) {
-            .glossary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .glossary-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .glossary-term {
-            padding: 0.5rem;
-            border-left: 2px solid var(--gold-leaf);
-            padding-left: 0.75rem;
-        }
-
-        .term-word {
-            font-weight: 600;
-            color: var(--ink-dark);
-            font-size: 1rem;
-        }
-
-        .term-definition {
-            color: var(--ink-medium);
-            font-size: 0.9rem;
-            font-style: italic;
-        }
-
-        .colophon {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(139, 69, 19, 0.2);
-            text-align: center;
-            font-style: italic;
-            font-size: 0.85rem;
-            color: var(--ink-faded);
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(139, 69, 19, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--illumination);
-            border-radius: 4px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimorio Emperia - Libellus Trium Virtutum</title>
+    <link rel="stylesheet" href="css/divine-baroque.css">
 </head>
 <body>
-    <!-- Toolbar -->
-    <div class="toolbar">
-        <div class="toolbar-left">
-            <div class="moon-display">
-                <span class="moon-icon" id="moonIcon">🌑</span>
-                <span id="moonPhase">New Moon</span>
+    <div class="container">
+        <header>
+            <h1 class="site-title">Grimorio Emperia</h1>
+            <p class="site-subtitle">Libellus Trium Virtutum</p>
+            <div class="trinity-symbols">🌙 ⚖️ ⚡</div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="volumes/volume1.html">Volume I</a></li>
+                <li><a href="volumes/volume2.html">Volume II</a></li>
+                <li><a href="volumes/volume3.html">Volume III</a></li>
+                <li><a href="volumes/volume4.html">Volume IV</a></li>
+                <li><a href="volumes/volume5.html">Volume V</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <div class="card">
+                <div class="card-content">
+                    <h2 class="card-title">Being a Treatise on Wisdom, Balance, and Proper Timing</h2>
+                    <p class="card-text" style="text-align: center; font-style: italic; margin-bottom: 20px;">
+                        In the tradition of scholars who seek truth through observation of the natural world
+                    </p>
+                    <p class="card-text">
+                        This grimoire presents a system of natural philosophy grounded in empirical observation 
+                        and the wisdom of three guiding principles: Thoth, who provides the accumulated knowledge 
+                        of those who came before; Ma'at, who ensures ethical balance and natural order; and Caerus, 
+                        who reveals through observation when conditions align for successful work.
+                    </p>
+                </div>
             </div>
-        </div>
-        <div class="toolbar-right">
-            <button class="tool-btn" onclick="openSearch()" data-key="Press S">🔍 Search</button>
-            <button class="tool-btn" onclick="openTeaTimer()" data-key="Press T">🍵 Tea</button>
-            <button class="tool-btn" onclick="openHourglass()" data-key="Press H">⏳ Study</button>
-            <button class="tool-btn" onclick="toggleDarkMode()" data-key="Press D">🌙</button>
-        </div>
+
+            <div class="volume-grid">
+                <div class="volume-card">
+                    <span class="volume-number">I</span>
+                    <h3 class="volume-title">The Three Virtues</h3>
+                    <p class="volume-description">
+                        An introduction to the philosophical framework: Thoth (wisdom), Ma'at (balance), and Caerus (timing).
+                    </p>
+                    <a href="volumes/volume1.html" class="btn">Study Volume I</a>
+                </div>
+
+                <div class="volume-card">
+                    <span class="volume-number">II</span>
+                    <h3 class="volume-title">Daily Workings</h3>
+                    <p class="volume-description">
+                        Practical rituals and observances for the modern scribe, from simple protections to healing practices.
+                    </p>
+                    <a href="volumes/volume2.html" class="btn">Study Volume II</a>
+                </div>
+
+                <div class="volume-card">
+                    <span class="volume-number">III</span>
+                    <h3 class="volume-title">Scroll Workings</h3>
+                    <p class="volume-description">
+                        Advanced spells and rituals organized by level: Apprentice, Journeyman, and Master.
+                    </p>
+                    <a href="volumes/volume3.html" class="btn">Study Volume III</a>
+                </div>
+
+                <div class="volume-card">
+                    <span class="volume-number">IV</span>
+                    <h3 class="volume-title">Lunar Practice</h3>
+                    <p class="volume-description">
+                        Understanding Caerus through timing, moon phases, planetary hours, and synchronicity.
+                    </p>
+                    <a href="volumes/volume4.html" class="btn">Study Volume IV</a>
+                </div>
+
+                <div class="volume-card">
+                    <span class="volume-number">V</span>
+                    <h3 class="volume-title">Reference</h3>
+                    <p class="volume-description">
+                        Study paths, natural sciences, glossary of terms, and documentation protocols.
+                    </p>
+                    <a href="volumes/volume5.html" class="btn">Study Volume V</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h2 class="card-title">Empirical Glossary</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                        <div>
+                            <strong style="color: var(--antique-gold);">Studiolo</strong><br>
+                            Sacred study space; altar
+                        </div>
+                        <div>
+                            <strong style="color: var(--antique-gold);">Studium</strong><br>
+                            Study room; workspace
+                        </div>
+                        <div>
+                            <strong style="color: var(--antique-gold);">Session</strong><br>
+                            Ritual; dedicated time
+                        </div>
+                        <div>
+                            <strong style="color: var(--antique-gold);">Workings</strong><br>
+                            Practices; active study
+                        </div>
+                        <div>
+                            <strong style="color: var(--antique-gold);">Studies</strong><br>
+                            Spirituality; path of learning
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p class="colophon">
+                Transcribed in the year of our study, 2025
+            </p>
+            <div class="colophon-symbols">🌙 ⚖️ ⚡</div>
+            <p style="font-style: italic; color: var(--deep-gold);">
+                Amo ĉiujn, fidu malmultajn, difektu neniun
+            </p>
+        </footer>
     </div>
-
-    <!-- Tea Timer Modal -->
-    <div class="modal" id="teaModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeTeaTimer()">×</button>
-            <h2 class="modal-title">Tea Timer</h2>
-            
-            <div class="timer-presets">
-                <button class="preset-btn" onclick="startTeaTimer(3)">Green Tea<br>3 min</button>
-                <button class="preset-btn" onclick="startTeaTimer(5)">Black Tea<br>5 min</button>
-                <button class="preset-btn" onclick="startTeaTimer(7)">Herbal Tea<br>7 min</button>
-                <button class="preset-btn" onclick="startTeaTimer(4)">White Tea<br>4 min</button>
-            </div>
-            
-            <div class="timer-display" id="teaDisplay">--:--</div>
-            
-            <div class="timer-controls">
-                <button class="timer-btn" onclick="pauseTeaTimer()">Pause</button>
-                <button class="timer-btn" onclick="resetTeaTimer()">Reset</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hourglass Timer Modal -->
-    <div class="modal" id="hourglassModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeHourglass()">×</button>
-            <h2 class="modal-title">Study Session</h2>
-            
-            <div class="hourglass-container">
-                <div class="hourglass-visual" id="hourglassIcon">⏳</div>
-                <div class="timer-display" id="hourglassDisplay">30:00</div>
-                
-                <div class="timer-controls">
-                    <button class="timer-btn" onclick="startHourglass()">Start</button>
-                    <button class="timer-btn" onclick="pauseHourglass()">Pause</button>
-                    <button class="timer-btn" onclick="resetHourglass()">Reset</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Search Modal -->
-    <div class="modal" id="searchModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeSearch()">×</button>
-            <h2 class="modal-title">Search Grimoire</h2>
-            
-            <input type="text" class="search-input" id="searchInput" placeholder="Search for herbs, workings, incantations..." onkeyup="performSearch()">
-            
-            <div class="search-results" id="searchResults"></div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="manuscript">
-        <div class="page">
-            <div class="illuminated-header">
-                <span class="drop-cap">G</span>
-                <h1 class="title">Grimorio Emperia</h1>
-                <p class="subtitle">Compiled by Lord Edmund Ashford</p>
-                <p class="subtitle" style="margin-top: 0.5rem;">A Collection of Observations, Workings,<br>and Studies in the Natural Arts</p>
-            </div>
-
-            <div class="epigraph">
-                "Knowledge need not be spoken aloud to retain its power. Thoth invented writing so wisdom could endure in silence. Your studies belong to you alone."
-            </div>
-
-            <div class="volumes">
-                <div class="volume-card" onclick="window.location.href='grimoire-volume-1.html'">
-                    <div class="volume-header">
-                        <span class="volume-number">I</span>
-                        <h2 class="volume-title">Foundations</h2>
-                    </div>
-                    <p class="volume-description">
-                        The Three Virtues, personal philosophy, establishing your Studiolo, and understanding the empirical path of the Scribe.
-                    </p>
-                </div>
-
-                <div class="volume-card" onclick="window.location.href='grimoire-volume-2.html'">
-                    <div class="volume-header">
-                        <span class="volume-number">II</span>
-                        <h2 class="volume-title">Daily Workings</h2>
-                    </div>
-                    <p class="volume-description">
-                        Tea Studies, hourglass sessions, regular observances, and practices for everyday integration.
-                    </p>
-                </div>
-
-                <div class="volume-card" onclick="window.location.href='grimoire-volume-3.html'">
-                    <div class="volume-header">
-                        <span class="volume-number">III</span>
-                        <h2 class="volume-title">Scroll Workings</h2>
-                    </div>
-                    <p class="volume-description">
-                        Manifestation bottles, banishment fire, and the art of working with vintage message scrolls.
-                    </p>
-                </div>
-
-                <div class="volume-card" onclick="window.location.href='grimoire-volume-4.html'">
-                    <div class="volume-header">
-                        <span class="volume-number">IV</span>
-                        <h2 class="volume-title">Lunar & Seasonal Sessions</h2>
-                    </div>
-                    <p class="volume-description">
-                        Moon phase workings, seasonal markers, and timing-based sessions that honor natural cycles.
-                    </p>
-                </div>
-
-                <div class="volume-card" onclick="window.location.href='grimoire-volume-5.html'">
-                    <div class="volume-header">
-                        <span class="volume-number">V</span>
-                        <h2 class="volume-title">Materia Studiorum</h2>
-                    </div>
-                    <p class="volume-description">
-                        Reference materials, Esperanto incantations, correspondences, and the living lexicon of your studies.
-                    </p>
-                </div>
-
-                <div class="volume-card" onclick="window.location.href='chronicles-ashford.html'">
-                    <div class="volume-header">
-                        <span class="volume-number">✦</span>
-                        <h2 class="volume-title">Chronicles</h2>
-                    </div>
-                    <p class="volume-description">
-                        The travels and studies of Lord Edmund Ashford, author and empirical philosopher.
-                    </p>
-                </div>
-            </div>
-
-            <div class="glossary">
-                <h3 class="glossary-title">— Empirical Glossary —</h3>
-                <div class="glossary-grid">
-                    <div class="glossary-term">
-                        <div class="term-word">Studiolo</div>
-                        <div class="term-definition">Sacred study space; altar</div>
-                    </div>
-                    <div class="glossary-term">
-                        <div class="term-word">Studium</div>
-                        <div class="term-definition">Study room; workspace</div>
-                    </div>
-                    <div class="glossary-term">
-                        <div class="term-word">Session</div>
-                        <div class="term-definition">Ritual; dedicated time</div>
-                    </div>
-                    <div class="glossary-term">
-                        <div class="term-word">Workings</div>
-                        <div class="term-definition">Practices; active study</div>
-                    </div>
-                    <div class="glossary-term">
-                        <div class="term-word">Studies</div>
-                        <div class="term-definition">Spirituality; path of learning</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="colophon">
-                Transcribed in the year of our study, 2025<br>
-                🌙 ⚖️ ⚡<br>
-                <em>Amo ĉiujn, fidu malmultajn, difektu neniun</em>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Moon Phase Calculator
-        function getMoonPhase() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth() + 1;
-            const day = today.getDate();
-            
-            let c, e, jd, b;
-            
-            if (month < 3) {
-                year--;
-                month += 12;
-            }
-            
-            ++month;
-            c = 365.25 * year;
-            e = 30.6 * month;
-            jd = c + e + day - 694039.09;
-            jd /= 29.5305882;
-            b = parseInt(jd);
-            jd -= b;
-            b = Math.round(jd * 8);
-            
-            if (b >= 8) b = 0;
-            
-            const phases = [
-                { name: 'New Moon', icon: '🌑' },
-                { name: 'Waxing Crescent', icon: '🌒' },
-                { name: 'First Quarter', icon: '🌓' },
-                { name: 'Waxing Gibbous', icon: '🌔' },
-                { name: 'Full Moon', icon: '🌕' },
-                { name: 'Waning Gibbous', icon: '🌖' },
-                { name: 'Last Quarter', icon: '🌗' },
-                { name: 'Waning Crescent', icon: '🌘' }
-            ];
-            
-            return phases[b];
-        }
-        
-        // Update moon phase on load
-        window.addEventListener('load', () => {
-            const phase = getMoonPhase();
-            document.getElementById('moonIcon').textContent = phase.icon;
-            document.getElementById('moonPhase').textContent = phase.name;
-        });
-        
-        // Dark Mode Toggle
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        }
-        
-        // Load dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-        }
-        
-        // Tea Timer
-        let teaTimer = null;
-        let teaSeconds = 0;
-        
-        function openTeaTimer() {
-            document.getElementById('teaModal').classList.add('active');
-        }
-        
-        function closeTeaTimer() {
-            document.getElementById('teaModal').classList.remove('active');
-            resetTeaTimer();
-        }
-        
-        function startTeaTimer(minutes) {
-            resetTeaTimer();
-            teaSeconds = minutes * 60;
-            updateTeaDisplay();
-            
-            teaTimer = setInterval(() => {
-                teaSeconds--;
-                updateTeaDisplay();
-                
-                if (teaSeconds <= 0) {
-                    clearInterval(teaTimer);
-                    alert('Your tea is ready! 🍵');
-                }
-            }, 1000);
-        }
-        
-        function pauseTeaTimer() {
-            if (teaTimer) {
-                clearInterval(teaTimer);
-                teaTimer = null;
-            }
-        }
-        
-        function resetTeaTimer() {
-            if (teaTimer) clearInterval(teaTimer);
-            teaTimer = null;
-            teaSeconds = 0;
-            document.getElementById('teaDisplay').textContent = '--:--';
-        }
-        
-        function updateTeaDisplay() {
-            const mins = Math.floor(teaSeconds / 60);
-            const secs = teaSeconds % 60;
-            document.getElementById('teaDisplay').textContent = 
-                `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-        
-        // Hourglass Timer
-        let hourglassTimer = null;
-        let hourglassSeconds = 1800; // 30 minutes
-        
-        function openHourglass() {
-            document.getElementById('hourglassModal').classList.add('active');
-        }
-        
-        function closeHourglass() {
-            document.getElementById('hourglassModal').classList.remove('active');
-            resetHourglass();
-        }
-        
-        function startHourglass() {
-            if (hourglassTimer) return;
-            
-            document.getElementById('hourglassIcon').classList.remove('paused');
-            
-            hourglassTimer = setInterval(() => {
-                hourglassSeconds--;
-                updateHourglassDisplay();
-                
-                if (hourglassSeconds <= 0) {
-                    clearInterval(hourglassTimer);
-                    hourglassTimer = null;
-                    document.getElementById('hourglassIcon').classList.add('paused');
-                    alert('Study session complete! 📖');
-                }
-            }, 1000);
-        }
-        
-        function pauseHourglass() {
-            if (hourglassTimer) {
-                clearInterval(hourglassTimer);
-                hourglassTimer = null;
-                document.getElementById('hourglassIcon').classList.add('paused');
-            }
-        }
-        
-        function resetHourglass() {
-            if (hourglassTimer) clearInterval(hourglassTimer);
-            hourglassTimer = null;
-            hourglassSeconds = 1800;
-            updateHourglassDisplay();
-            document.getElementById('hourglassIcon').classList.add('paused');
-        }
-        
-        function updateHourglassDisplay() {
-            const mins = Math.floor(hourglassSeconds / 60);
-            const secs = hourglassSeconds % 60;
-            document.getElementById('hourglassDisplay').textContent = 
-                `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-        
-        // Search Function
-        function openSearch() {
-            document.getElementById('searchModal').classList.add('active');
-            document.getElementById('searchInput').focus();
-        }
-        
-        function closeSearch() {
-            document.getElementById('searchModal').classList.remove('active');
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').innerHTML = '';
-        }
-
-        // Keyboard shortcuts (desktop)
-        document.addEventListener('keydown', (e) => {
-            // Don't trigger if typing in an input
-            if (e.target.tagName === 'INPUT') return;
-            
-            switch(e.key.toLowerCase()) {
-                case 's':
-                    e.preventDefault();
-                    openSearch();
-                    break;
-                case 't':
-                    e.preventDefault();
-                    openTeaTimer();
-                    break;
-                case 'h':
-                    e.preventDefault();
-                    openHourglass();
-                    break;
-                case 'd':
-                    e.preventDefault();
-                    toggleDarkMode();
-                    break;
-                case 'escape':
-                    closeSearch();
-                    closeTeaTimer();
-                    closeHourglass();
-                    break;
-            }
-        });
-        
-        // Simple search index
-        const searchIndex = [
-            { volume: 'Volume I', title: 'Three Virtues', keywords: 'caerus thoth maat timing wisdom balance philosophy', url: 'grimoire-volume-1.html' },
-            { volume: 'Volume I', title: 'The Rede', keywords: 'love trust harm none ethics amo ĉiujn fidu', url: 'grimoire-volume-1.html' },
-            { volume: 'Volume II', title: 'Tea Studies', keywords: 'tea ceremony chamomile peppermint lavender herbal blend', url: 'grimoire-volume-2.html' },
-            { volume: 'Volume II', title: 'Hourglass Sessions', keywords: 'study session meditation writing journal 30 minutes', url: 'grimoire-volume-2.html' },
-            { volume: 'Volume III', title: 'Manifestation Bottles', keywords: 'manifestation bottle scroll herbs intention', url: 'grimoire-volume-3.html' },
-            { volume: 'Volume III', title: 'Banishment Fire', keywords: 'banishment fire burn scroll release', url: 'grimoire-volume-3.html' },
-            { volume: 'Volume IV', title: 'Moon Phases', keywords: 'new moon full waxing waning lunar cycle', url: 'grimoire-volume-4.html' },
-            { volume: 'Volume IV', title: 'Seasonal Markers', keywords: 'solstice equinox spring summer autumn winter', url: 'grimoire-volume-4.html' },
-            { volume: 'Volume V', title: 'Herbal Correspondences', keywords: 'chamomile peppermint lavender ginger rose sage rosemary', url: 'grimoire-volume-5.html' },
-            { volume: 'Volume V', title: 'Esperanto Incantations', keywords: 'esperanto incantation phrase blessing protection', url: 'grimoire-volume-5.html' },
-            { volume: 'Volume V', title: 'Color Correspondences', keywords: 'red blue green yellow purple gold black white color', url: 'grimoire-volume-5.html' }
-        ];
-        
-        function performSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const results = document.getElementById('searchResults');
-            
-            if (query.length < 2) {
-                results.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--ink-faded);">Enter at least 2 characters to search</div>';
-                return;
-            }
-            
-            const matches = searchIndex.filter(item => 
-                item.keywords.includes(query) || 
-                item.title.toLowerCase().includes(query) ||
-                item.volume.toLowerCase().includes(query)
-            );
-            
-            if (matches.length === 0) {
-                results.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--ink-faded);">No results found</div>';
-                return;
-            }
-            
-            results.innerHTML = matches.map(match => `
-                <div class="search-result" onclick="window.location.href='${match.url}'">
-                    <div class="search-volume">${match.volume}</div>
-                    <div class="search-snippet">${match.title}</div>
-                </div>
-            `).join('');
-        }
-    </script>
 </body>
 </html>
