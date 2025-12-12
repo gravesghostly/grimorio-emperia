@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements - Grimorio Emperia</title>
+    <link rel="stylesheet" href="css/divine-baroque.css">
+    <link rel="stylesheet" href="css/desktop-grimoire.css">
+    <style>
+        .achievement-category {
+            margin: 30px 0;
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.9), rgba(42, 63, 95, 0.7));
+            border: 2px solid var(--caerus-bright);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .category-header::before,
+        .category-header::after {
+            content: '✦';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--caerus-bright);
+            animation: candleFlicker 3s ease-in-out infinite;
+        }
+
+        .category-header::before { left: 20px; }
+        .category-header::after { right: 20px; }
+
+        .category-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--caerus-bright), var(--maat-bright));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .category-description {
+            color: var(--maat-silver);
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.8), rgba(42, 63, 95, 0.6));
+            border: 2px solid var(--thoth-medium);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(74, 125, 199, 0.1) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.4;
+            filter: grayscale(1);
+        }
+
+        .achievement-card.unlocked {
+            border-color: var(--caerus-bright);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .achievement-card.unlocked::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: var(--caerus-bright);
+            text-shadow: 0 0 10px var(--caerus-glow);
+        }
+
+        .achievement-card:hover:not(.locked) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(74, 125, 199, 0.5);
+        }
+
+        .achievement-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .achievement-name {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.1rem;
+            color: var(--maat-bright);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .achievement-description {
+            font-size: 0.85rem;
+            color: var(--maat-silver);
+            line-height: 1.5;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .achievement-requirement {
+            font-size: 0.8rem;
+            color: var(--thoth-bright);
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .achievement-progress {
+            background: rgba(10, 10, 15, 0.6);
+            border: 1px solid var(--thoth-bright);
+            border-radius: 8px;
+            height: 20px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--thoth-bright), var(--caerus-bright));
+            border-radius: 8px;
+            transition: width 0.5s ease;
+        }
+
+        .achievement-tier {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tier-bronze {
+            background: linear-gradient(135deg, #cd7f32, #b87333);
+            color: var(--void-black);
+        }
+
+        .tier-silver {
+            background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+            color: var(--void-black);
+        }
+
+        .tier-gold {
+            background: linear-gradient(135deg, var(--caerus-medium), var(--caerus-bright));
+            color: var(--void-black);
+        }
+
+        .tier-platinum {
+            background: linear-gradient(135deg, #e5e4e2, #ffffff);
+            color: var(--void-black);
+        }
+
+        .tier-secret {
+            background: linear-gradient(135deg, #4a0e4e, #81007f);
+            color: var(--maat-glow);
+            border: 1px solid var(--caerus-bright);
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.8), rgba(42, 63, 95, 0.6));
+            border: 2px solid var(--thoth-bright);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: var(--caerus-bright);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: var(--maat-silver);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .achievement-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .achievement-icon {
+                font-size: 2.5rem;
+            }
+
+            .achievement-name {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="site-title">Achievements</h1>
+            <p class="site-subtitle">Badges of Honor & Mastery</p>
+            <div class="trinity-symbols">🌙 ⚖️ ⚡</div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="quests.html">Quests</a></li>
+                <li><a href="achievements.html">Achievements</a></li>
+                <li><a href="logger.html">Logger</a></li>
+                <li><a href="volumes/volume1.html">Volume I</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Stats Overview -->
+            <div class="card">
+                <div class="card-content">
+                    <h2 class="card-title">Your Achievement Progress</h2>
+                    <div class="stats-overview">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalUnlocked">0</div>
+                            <div class="stat-label">Achievements Unlocked</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="completionRate">0%</div>
+                            <div class="stat-label">Completion Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="recentUnlocks">0</div>
+                            <div class="stat-label">This Month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="rareAchievements">0</div>
+                            <div class="stat-label">Rare Unlocked</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foundation Tier (Bronze) -->
+            <div class="achievement-category">
+                <div class="category-header">
+                    <div class="category-title">Foundation Tier</div>
+                    <div class="category-description">Beginning your journey as a scribe</div>
+                </div>
+
+                <div class="achievement-grid">
+                    <div class="achievement-card unlocked" data-achievement="oath-taken">
+                        <div class="achievement-tier tier-bronze">Bronze</div>
+                        <div class="achievement-icon">📜</div>
+                        <div class="achievement-name">Oath Taken</div>
+                        <div class="achievement-description">Begin your journey through the Three Virtues</div>
+                        <div class="achievement-requirement">Set your oath date</div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="first-steps">
+                        <div class="achievement-tier tier-bronze">Bronze</div>
+                        <div class="achievement-icon">👣</div>
+                        <div class="achievement-name">First Steps</div>
+                        <div class="achievement-description">Complete your first working</div>
+                        <div class="achievement-requirement">Complete 1 working</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="scholars-touch">
+                        <div class="achievement-tier tier-bronze">Bronze</div>
+                        <div class="achievement-icon">📖</div>
+                        <div class="achievement-name">Scholar's Touch</div>
+                        <div class="achievement-description">Read your first volume of the grimoire</div>
+                        <div class="achievement-requirement">Read 1 volume</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="dedicated-scribe">
+                        <div class="achievement-tier tier-bronze">Bronze</div>
+                        <div class="achievement-icon">🔥</div>
+                        <div class="achievement-name">Dedicated Scribe</div>
+                        <div class="achievement-description">Maintain a 7-day practice streak</div>
+                        <div class="achievement-requirement">7 day streak (0/7)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="moon-watcher">
+                        <div class="achievement-tier tier-bronze">Bronze</div>
+                        <div class="achievement-icon">🌙</div>
+                        <div class="achievement-name">Moon Watcher</div>
+                        <div class="achievement-description">Observe and track a full lunar cycle</div>
+                        <div class="achievement-requirement">Track 1 complete cycle</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="herbalist-initiate">
+                        <div class="achievement-tier tier-bronze">Bronze</div>
+                        <div class="achievement-icon">🌿</div>
+                        <div class="achievement-name">Herbalist Initiate</div>
+                        <div class="achievement-description">Study your first 10 herbs</div>
+                        <div class="achievement-requirement">Study 10 herbs (0/10)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Virtue Tier (Silver) -->
+            <div class="achievement-category">
+                <div class="category-header">
+                    <div class="category-title">Virtue Tier</div>
+                    <div class="category-description">Dedication to the Three Paths</div>
+                </div>
+
+                <div class="achievement-grid">
+                    <div class="achievement-card locked" data-achievement="thoths-blessing">
+                        <div class="achievement-tier tier-silver">Silver</div>
+                        <div class="achievement-icon">🌙</div>
+                        <div class="achievement-name">Thoth's Blessing</div>
+                        <div class="achievement-description">Accumulate 50 Thoth points through study and documentation</div>
+                        <div class="achievement-requirement">50 Thoth points (0/50)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="maats-balance">
+                        <div class="achievement-tier tier-silver">Silver</div>
+                        <div class="achievement-icon">⚖️</div>
+                        <div class="achievement-name">Ma'at's Balance</div>
+                        <div class="achievement-description">Complete 30 consecutive daily balance check-ins</div>
+                        <div class="achievement-requirement">30 day check-in streak (0/30)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="caerus-favor">
+                        <div class="achievement-tier tier-silver">Silver</div>
+                        <div class="achievement-icon">⚡</div>
+                        <div class="achievement-name">Caerus's Favor</div>
+                        <div class="achievement-description">Complete 10 workings with perfect timing alignment</div>
+                        <div class="achievement-requirement">10 perfect timings (0/10)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="threefold-path">
+                        <div class="achievement-tier tier-silver">Silver</div>
+                        <div class="achievement-icon">🔱</div>
+                        <div class="achievement-name">Three-Fold Path</div>
+                        <div class="achievement-description">Reach 100 points in each virtue</div>
+                        <div class="achievement-requirement">100 in each (T:0, M:0, C:0)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="polyglot-novice">
+                        <div class="achievement-tier tier-silver">Silver</div>
+                        <div class="achievement-icon">🗣️</div>
+                        <div class="achievement-name">Polyglot Novice</div>
+                        <div class="achievement-description">Learn 50 Esperanto phrases</div>
+                        <div class="achievement-requirement">50 phrases (0/50)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="ritual-master">
+                        <div class="achievement-tier tier-silver">Silver</div>
+                        <div class="achievement-icon">🕯️</div>
+                        <div class="achievement-name">Ritual Master</div>
+                        <div class="achievement-description">Perform 25 full workings</div>
+                        <div class="achievement-requirement">25 workings (0/25)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mastery Tier (Gold) -->
+            <div class="achievement-category">
+                <div class="category-header">
+                    <div class="category-title">Mastery Tier</div>
+                    <div class="category-description">True dedication and deep understanding</div>
+                </div>
+
+                <div class="achievement-grid">
+                    <div class="achievement-card locked" data-achievement="keeper-of-secrets">
+                        <div class="achievement-tier tier-gold">Gold</div>
+                        <div class="achievement-icon">📚</div>
+                        <div class="achievement-name">Keeper of Secrets</div>
+                        <div class="achievement-description">Document 50 complete workings in your grimoire</div>
+                        <div class="achievement-requirement">50 documented workings (0/50)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="lunar-master">
+                        <div class="achievement-tier tier-gold">Gold</div>
+                        <div class="achievement-icon">🌕</div>
+                        <div class="achievement-name">Lunar Master</div>
+                        <div class="achievement-description">Work through 10 complete lunar cycles</div>
+                        <div class="achievement-requirement">10 full cycles (0/10)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="natural-philosopher">
+                        <div class="achievement-tier tier-gold">Gold</div>
+                        <div class="achievement-icon">🔬</div>
+                        <div class="achievement-name">Natural Philosopher</div>
+                        <div class="achievement-description">Complete all natural science studies</div>
+                        <div class="achievement-requirement">All courses complete</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="living-grimoire">
+                        <div class="achievement-tier tier-gold">Gold</div>
+                        <div class="achievement-icon">✨</div>
+                        <div class="achievement-name">Living Grimoire</div>
+                        <div class="achievement-description">Document 100 total workings</div>
+                        <div class="achievement-requirement">100 workings (0/100)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="master-herbalist">
+                        <div class="achievement-tier tier-gold">Gold</div>
+                        <div class="achievement-icon">🌳</div>
+                        <div class="achievement-name">Master Herbalist</div>
+                        <div class="achievement-description">Master 25 different herbs</div>
+                        <div class="achievement-requirement">25 herbs mastered (0/25)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="unwavering-dedication">
+                        <div class="achievement-tier tier-gold">Gold</div>
+                        <div class="achievement-icon">🔥</div>
+                        <div class="achievement-name">Unwavering Dedication</div>
+                        <div class="achievement-description">Maintain a 60-day practice streak</div>
+                        <div class="achievement-requirement">60 day streak (0/60)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legendary Tier (Platinum) -->
+            <div class="achievement-category">
+                <div class="category-header">
+                    <div class="category-title">Legendary Tier</div>
+                    <div class="category-description">The pinnacle of mastery</div>
+                </div>
+
+                <div class="achievement-grid">
+                    <div class="achievement-card locked" data-achievement="sage-three-virtues">
+                        <div class="achievement-tier tier-platinum">Platinum</div>
+                        <div class="achievement-icon">👑</div>
+                        <div class="achievement-name">Sage of Three Virtues</div>
+                        <div class="achievement-description">Maximize all three virtue paths</div>
+                        <div class="achievement-requirement">200+ in each virtue</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="grandmaster">
+                        <div class="achievement-tier tier-platinum">Platinum</div>
+                        <div class="achievement-icon">⭐</div>
+                        <div class="achievement-name">Grandmaster</div>
+                        <div class="achievement-description">Reach the highest rank of scribe</div>
+                        <div class="achievement-requirement">Achieve Grandmaster rank</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="phoenix-rising">
+                        <div class="achievement-tier tier-platinum">Platinum</div>
+                        <div class="achievement-icon">🔥</div>
+                        <div class="achievement-name">Phoenix Rising</div>
+                        <div class="achievement-description">Complete the ultimate transformation working</div>
+                        <div class="achievement-requirement">Transformation ritual complete</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="eternal-student">
+                        <div class="achievement-tier tier-platinum">Platinum</div>
+                        <div class="achievement-icon">∞</div>
+                        <div class="achievement-name">Eternal Student</div>
+                        <div class="achievement-description">Maintain a 365-day practice streak</div>
+                        <div class="achievement-requirement">365 day streak (0/365)</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secret/Hidden Achievements -->
+            <div class="achievement-category">
+                <div class="category-header">
+                    <div class="category-title">Hidden Achievements</div>
+                    <div class="category-description">Discover through exceptional practice...</div>
+                </div>
+
+                <div class="achievement-grid">
+                    <div class="achievement-card locked" data-achievement="serendipity">
+                        <div class="achievement-tier tier-secret">Secret</div>
+                        <div class="achievement-icon">✨</div>
+                        <div class="achievement-name">Serendipity</div>
+                        <div class="achievement-description">Experience 5 major synchronicities in one moon cycle</div>
+                        <div class="achievement-requirement">???</div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="midnight-scholar">
+                        <div class="achievement-tier tier-secret">Secret</div>
+                        <div class="achievement-icon">🌙</div>
+                        <div class="achievement-name">Midnight Scholar</div>
+                        <div class="achievement-description">Complete 10 workings at exact midnight</div>
+                        <div class="achievement-requirement">???</div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="renaissance-scribe">
+                        <div class="achievement-tier tier-secret">Secret</div>
+                        <div class="achievement-icon">🎭</div>
+                        <div class="achievement-name">Renaissance Scribe</div>
+                        <div class="achievement-description">Master all 6 specialization paths</div>
+                        <div class="achievement-requirement">???</div>
+                    </div>
+
+                    <div class="achievement-card locked" data-achievement="unwritten-destiny">
+                        <div class="achievement-tier tier-secret">Secret</div>
+                        <div class="achievement-icon">❓</div>
+                        <div class="achievement-name">Unwritten Destiny</div>
+                        <div class="achievement-description">A true secret awaits discovery...</div>
+                        <div class="achievement-requirement">???</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p class="colophon">Badges of Honor</p>
+            <div class="colophon-symbols">🌙 ⚖️ ⚡</div>
+            <p style="font-style: italic; color: var(--maat-silver);">
+                "Each achievement marks growth along the path"
+            </p>
+        </footer>
+    </div>
+
+    <script src="js/achievements.js"></script>
+</body>
+</html>

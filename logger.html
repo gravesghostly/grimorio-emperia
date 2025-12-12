@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working Logger - Grimorio Emperia</title>
+    <link rel="stylesheet" href="css/divine-baroque.css">
+    <link rel="stylesheet" href="css/desktop-grimoire.css">
+    <style>
+        .logger-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.8), rgba(42, 63, 95, 0.6));
+            border: 2px solid var(--thoth-medium);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .form-section-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.5rem;
+            color: var(--caerus-bright);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--maat-bright);
+            margin-bottom: 8px;
+            font-family: 'IM Fell English', serif;
+            font-size: 1rem;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: var(--caerus-bright);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(10, 10, 15, 0.6);
+            border: 2px solid var(--thoth-bright);
+            border-radius: 10px;
+            color: var(--maat-bright);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--caerus-bright);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            color: var(--maat-silver);
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, var(--caerus-medium), var(--caerus-bright));
+            color: var(--void-black);
+            border: 2px solid var(--caerus-glow);
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .helper-text {
+            font-size: 0.85rem;
+            color: var(--maat-silver);
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .virtue-indicator {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .virtue-thoth {
+            background: linear-gradient(135deg, var(--thoth-deep), var(--thoth-bright));
+            color: var(--maat-glow);
+        }
+
+        .virtue-maat {
+            background: linear-gradient(135deg, var(--maat-silver), var(--maat-bright));
+            color: var(--void-black);
+        }
+
+        .virtue-caerus {
+            background: linear-gradient(135deg, var(--caerus-medium), var(--caerus-bright));
+            color: var(--void-black);
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .template-card {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.7), rgba(42, 63, 95, 0.5));
+            border: 2px solid var(--thoth-medium);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover {
+            border-color: var(--caerus-bright);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 125, 199, 0.4);
+        }
+
+        .template-card.selected {
+            border-color: var(--caerus-bright);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .template-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .template-name {
+            color: var(--maat-bright);
+            font-family: 'IM Fell English', serif;
+            font-size: 1.1rem;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(74, 125, 199, 0.3), rgba(107, 163, 255, 0.2));
+            border: 2px solid var(--caerus-bright);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-section {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container logger-container">
+        <header>
+            <h1 class="site-title">Working Logger</h1>
+            <p class="site-subtitle">Document Your Practice</p>
+            <div class="trinity-symbols">🌙 ⚖️ ⚡</div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="quests.html">Quests</a></li>
+                <li><a href="achievements.html">Achievements</a></li>
+                <li><a href="logger.html">Logger</a></li>
+                <li><a href="volumes/volume1.html">Volume I</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <div class="success-message" id="successMessage">
+                <h3 style="color: var(--caerus-bright); margin-bottom: 10px;">✓ Working Documented!</h3>
+                <p style="color: var(--maat-bright);">Your practice has been recorded and virtue points awarded.</p>
+            </div>
+
+            <!-- Template Selection -->
+            <div class="card">
+                <div class="card-content">
+                    <h2 class="card-title">Select Working Type</h2>
+                    <div class="template-selector">
+                        <div class="template-card" onclick="selectTemplate('protection')">
+                            <div class="template-icon">🛡️</div>
+                            <div class="template-name">Protection</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate('healing')">
+                            <div class="template-icon">💚</div>
+                            <div class="template-name">Healing</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate('cleansing')">
+                            <div class="template-icon">💧</div>
+                            <div class="template-name">Cleansing</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate('manifestation')">
+                            <div class="template-icon">✨</div>
+                            <div class="template-name">Manifestation</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate('study')">
+                            <div class="template-icon">📚</div>
+                            <div class="template-name">Study Session</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate('other')">
+                            <div class="template-icon">🔮</div>
+                            <div class="template-name">Other</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Working Form -->
+            <form id="workingForm">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Basic Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required" for="workingDate">Date</label>
+                            <input type="date" id="workingDate" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required" for="workingTime">Time</label>
+                            <input type="time" id="workingTime" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required" for="workingType">Working Type</label>
+                        <select id="workingType" class="form-select" required>
+                            <option value="">Select type...</option>
+                            <option value="protection">🛡️ Protection</option>
+                            <option value="healing">💚 Healing</option>
+                            <option value="cleansing">💧 Cleansing</option>
+                            <option value="manifestation">✨ Manifestation</option>
+                            <option value="study">📚 Study Session</option>
+                            <option value="other">🔮 Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required" for="workingTitle">Working Title/Name</label>
+                        <input type="text" id="workingTitle" class="form-input" placeholder="e.g., 'Protection Amulet for Travel'" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required" for="intention">Intention Stated</label>
+                        <textarea id="intention" class="form-textarea" placeholder="What was your clear intention for this working?" required></textarea>
+                        <div class="helper-text">Be specific about what you sought to achieve</div>
+                    </div>
+                </div>
+
+                <!-- Timing & Correspondences -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Timing & Correspondences <span class="virtue-indicator virtue-caerus">+Caerus</span></h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="moonPhase">Moon Phase</label>
+                            <select id="moonPhase" class="form-select">
+                                <option value="">Select phase...</option>
+                                <option value="new">🌑 New Moon</option>
+                                <option value="waxing-crescent">🌒 Waxing Crescent</option>
+                                <option value="first-quarter">🌓 First Quarter</option>
+                                <option value="waxing-gibbous">🌔 Waxing Gibbous</option>
+                                <option value="full">🌕 Full Moon</option>
+                                <option value="waning-gibbous">🌖 Waning Gibbous</option>
+                                <option value="last-quarter">🌗 Last Quarter</option>
+                                <option value="waning-crescent">🌘 Waning Crescent</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="dayOfWeek">Planetary Day</label>
+                            <select id="dayOfWeek" class="form-select">
+                                <option value="monday">🌙 Monday (Luna)</option>
+                                <option value="tuesday">♂️ Tuesday (Mars)</option>
+                                <option value="wednesday">☿️ Wednesday (Mercury)</option>
+                                <option value="thursday">♃ Thursday (Jupiter)</option>
+                                <option value="friday">♀️ Friday (Venus)</option>
+                                <option value="saturday">♄ Saturday (Saturn)</option>
+                                <option value="sunday">☉ Sunday (Sol)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Was timing optimal?</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="timingOptimal" name="timing">
+                                <label for="timingOptimal">All timing factors aligned</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="synchronicity" name="timing">
+                                <label for="synchronicity">Synchronicity/Caerus moment</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="planetaryHour" name="timing">
+                                <label for="planetaryHour">Used planetary hour</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materials Used -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Materials Used <span class="virtue-indicator virtue-thoth">+Thoth</span></h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="herbsUsed">Herbs/Plants</label>
+                        <input type="text" id="herbsUsed" class="form-input" placeholder="e.g., Rosemary, Lavender, Sage">
+                        <div class="helper-text">Separate multiple herbs with commas</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="crystalsUsed">Crystals/Stones</label>
+                        <input type="text" id="crystalsUsed" class="form-input" placeholder="e.g., Clear Quartz, Amethyst">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="otherMaterials">Other Materials</label>
+                        <textarea id="otherMaterials" class="form-textarea" placeholder="Candles, oils, incense, written sigils, etc."></textarea>
+                    </div>
+                </div>
+
+                <!-- Process & Documentation -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Process & Observations <span class="virtue-indicator virtue-thoth">+Thoth</span></h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label required" for="processNotes">Step-by-Step Process</label>
+                        <textarea id="processNotes" class="form-textarea" style="min-height: 180px;" placeholder="Describe what you did, in order..." required></textarea>
+                        <div class="helper-text">Document clearly so you can replicate this working</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="esperantoPhrase">Esperanto Phrase Used (if any)</label>
+                        <input type="text" id="esperantoPhrase" class="form-input" placeholder="e.g., 'Protektu min kontraŭ malbono'">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="immediateResults">Immediate Results/Sensations</label>
+                        <textarea id="immediateResults" class="form-textarea" placeholder="What did you notice immediately after completing the working?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Results & Reflection -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Results & Reflection <span class="virtue-indicator virtue-maat">+Ma'at</span></h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="wasSuccessful">Was the working successful?</label>
+                        <select id="wasSuccessful" class="form-select">
+                            <option value="">Select...</option>
+                            <option value="yes">✓ Yes - Achieved desired outcome</option>
+                            <option value="partial">~ Partial - Some results</option>
+                            <option value="too-soon">⏳ Too soon to tell</option>
+                            <option value="no">✗ No - Did not achieve outcome</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="lessonsLearned">Lessons Learned</label>
+                        <textarea id="lessonsLearned" class="form-textarea" placeholder="What would you do differently? What worked especially well?"></textarea>
+                        <div class="helper-text">This wisdom will guide future workings</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="ethicalConsiderations">Ethical Considerations</label>
+                        <textarea id="ethicalConsiderations" class="form-textarea" placeholder="Did this working align with Ma'at? Any concerns about balance or harm?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Tags & Categories -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Tags & Categories</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Relevant Volumes</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="volume1" name="volumes">
+                                <label for="volume1">Volume I (Three Virtues)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="volume2" name="volumes">
+                                <label for="volume2">Volume II (Daily Workings)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="volume3" name="volumes">
+                                <label for="volume3">Volume III (Scroll Workings)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="volume4" name="volumes">
+                                <label for="volume4">Volume IV (Lunar Practice)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="volume5" name="volumes">
+                                <label for="volume5">Volume V (Reference)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="customTags">Custom Tags</label>
+                        <input type="text" id="customTags" class="form-input" placeholder="e.g., beginner-friendly, quick-working, emergency">
+                        <div class="helper-text">Add your own tags separated by commas</div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="submit-button">📝 Document Working</button>
+            </form>
+        </main>
+
+        <footer>
+            <p class="colophon">Documentation is Sacred</p>
+            <div class="colophon-symbols">🌙 ⚖️ ⚡</div>
+            <p style="font-style: italic; color: var(--maat-silver);">
+                "Thoth invented writing so knowledge didn't need to be spoken"
+            </p>
+        </footer>
+    </div>
+
+    <script src="js/logger.js"></script>
+</body>
+</html>
