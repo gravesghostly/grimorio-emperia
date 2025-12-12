@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest Log - Grimorio Emperia</title>
+    <link rel="stylesheet" href="css/divine-baroque.css">
+    <style>
+        .quest-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.8), rgba(42, 63, 95, 0.6));
+            border: 2px solid var(--thoth-medium);
+            color: var(--maat-bright);
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'IM Fell English', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            border-color: var(--caerus-bright);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, var(--caerus-medium), var(--caerus-bright));
+            border-color: var(--caerus-glow);
+            color: var(--void-black);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .quest-panel {
+            display: none;
+        }
+
+        .quest-panel.active {
+            display: block;
+        }
+
+        .quest-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quest-item {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.7), rgba(42, 63, 95, 0.5));
+            border: 2px solid var(--thoth-medium);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quest-item:hover {
+            border-color: var(--caerus-bright);
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(74, 125, 199, 0.3);
+        }
+
+        .quest-item.completed {
+            opacity: 0.7;
+            border-color: var(--caerus-bright);
+            background: linear-gradient(135deg, rgba(42, 63, 95, 0.5), rgba(26, 35, 50, 0.7));
+        }
+
+        .quest-item.completed::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem;
+            color: var(--caerus-bright);
+            text-shadow: 0 0 10px var(--caerus-glow);
+        }
+
+        .quest-checkbox {
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            border: 2px solid var(--thoth-bright);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 10, 15, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .quest-checkbox:hover {
+            border-color: var(--caerus-bright);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .quest-checkbox.checked {
+            background: linear-gradient(135deg, var(--caerus-medium), var(--caerus-bright));
+            border-color: var(--caerus-glow);
+        }
+
+        .quest-checkbox.checked::after {
+            content: '✓';
+            color: var(--void-black);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .quest-content {
+            flex: 1;
+        }
+
+        .quest-title {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            color: var(--maat-bright);
+            margin-bottom: 8px;
+        }
+
+        .quest-description {
+            font-size: 0.95rem;
+            color: var(--maat-silver);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .quest-reward {
+            display: inline-block;
+            background: rgba(218, 165, 32, 0.2);
+            border: 1px solid var(--caerus-medium);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            color: var(--caerus-bright);
+            margin-top: 5px;
+        }
+
+        .quest-icon {
+            font-size: 2rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .quest-timer {
+            font-size: 0.8rem;
+            color: var(--thoth-bright);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .completion-bar {
+            background: rgba(10, 10, 15, 0.6);
+            border: 1px solid var(--thoth-bright);
+            border-radius: 10px;
+            height: 40px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .completion-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--thoth-bright), var(--caerus-bright));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .completion-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--maat-bright);
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 2;
+            text-shadow: 0 0 5px var(--void-black);
+        }
+
+        .bonus-banner {
+            background: linear-gradient(135deg, var(--caerus-deep), var(--caerus-medium));
+            border: 2px solid var(--caerus-bright);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .bonus-banner strong {
+            color: var(--caerus-glow);
+            font-size: 1.2rem;
+        }
+
+        .rank-requirement {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.9), rgba(42, 63, 95, 0.7));
+            border: 2px solid var(--caerus-bright);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .requirement-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .requirement-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(74, 125, 199, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .requirement-item:last-child {
+            border-bottom: none;
+        }
+
+        .requirement-status {
+            font-weight: bold;
+        }
+
+        .requirement-status.complete {
+            color: var(--caerus-bright);
+        }
+
+        .requirement-status.incomplete {
+            color: var(--maat-silver);
+        }
+
+        .quiz-button {
+            background: linear-gradient(135deg, var(--caerus-medium), var(--caerus-bright));
+            color: var(--void-black);
+            border: 2px solid var(--caerus-glow);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-family: 'IM Fell English', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            margin: 10px;
+        }
+
+        .quiz-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .quiz-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .quest-tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                width: 100%;
+            }
+
+            .quest-item {
+                flex-direction: column;
+            }
+
+            .quest-icon {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="site-title">Quest Log</h1>
+            <p class="site-subtitle">Your Path Through the Three Virtues</p>
+            <div class="trinity-symbols">🌙 ⚖️ ⚡</div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="quests.html">Quests</a></li>
+                <li><a href="achievements.html">Achievements</a></li>
+                <li><a href="logger.html">Working Logger</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Quest Tabs -->
+            <div class="quest-tabs">
+                <button class="tab-button active" onclick="switchTab('daily')">Daily Quests</button>
+                <button class="tab-button" onclick="switchTab('weekly')">Weekly Quests</button>
+                <button class="tab-button" onclick="switchTab('monthly')">Monthly Quests</button>
+                <button class="tab-button" onclick="switchTab('rankup')">Rank-Up Requirements</button>
+            </div>
+
+            <!-- Daily Quests Panel -->
+            <div id="dailyPanel" class="quest-panel active">
+                <div class="card">
+                    <div class="card-content">
+                        <h2 class="card-title">Daily Quests</h2>
+                        <p style="text-align: center; color: var(--maat-silver); margin-bottom: 20px;">
+                            <em>Resets at midnight • Complete 3/5 for "Diligent Day" bonus +5 points</em>
+                        </p>
+
+                        <div class="completion-bar">
+                            <div class="completion-fill" id="dailyCompletion" style="width: 0%"></div>
+                            <div class="completion-text" id="dailyCompletionText">0 / 5 Completed</div>
+                        </div>
+
+                        <ul class="quest-list" id="dailyQuests">
+                            <li class="quest-item" data-quest="daily-intention">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚖️</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Morning Intention Setting</div>
+                                    <div class="quest-description">
+                                        Begin your day by stating your intention for balance and focus. Write it in your journal or speak it aloud at your studiolo.
+                                    </div>
+                                    <div class="quest-reward">+2 Ma'at Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="daily-study">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">🌙</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Study Session</div>
+                                    <div class="quest-description">
+                                        Dedicate at least 15 minutes to studying: read a grimoire volume, research an herb, practice Esperanto, or document observations.
+                                    </div>
+                                    <div class="quest-reward">+5 Thoth Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="daily-moon">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚡</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Check Moon Phase</div>
+                                    <div class="quest-description">
+                                        Observe and record the current moon phase. Consider what workings would be appropriate for this timing.
+                                    </div>
+                                    <div class="quest-reward">+2 Caerus Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="daily-journal">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚖️</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Journal Entry</div>
+                                    <div class="quest-description">
+                                        Write a reflection on your day. What did you learn? Where was balance or imbalance? Document one observation.
+                                    </div>
+                                    <div class="quest-reward">+3 Ma'at Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="daily-review">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">🌙</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Review Herb or Crystal</div>
+                                    <div class="quest-description">
+                                        Study one herb or crystal: its properties, correspondences, and applications. Add notes to your grimoire.
+                                    </div>
+                                    <div class="quest-reward">+3 Thoth Points</div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div id="dailyBonus" class="bonus-banner" style="display: none;">
+                            <strong>🌟 Diligent Day Achieved! 🌟</strong>
+                            <p style="color: var(--maat-bright); margin-top: 10px;">Bonus +5 points awarded!</p>
+                        </div>
+
+                        <div class="quest-timer" id="dailyTimer" style="text-align: center; font-size: 1rem; margin-top: 20px;">
+                            Resets in: Calculating...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Quests Panel -->
+            <div id="weeklyPanel" class="quest-panel">
+                <div class="card">
+                    <div class="card-content">
+                        <h2 class="card-title">Weekly Quests</h2>
+                        <p style="text-align: center; color: var(--maat-silver); margin-bottom: 20px;">
+                            <em>Resets every Monday at midnight</em>
+                        </p>
+
+                        <div class="completion-bar">
+                            <div class="completion-fill" id="weeklyCompletion" style="width: 0%"></div>
+                            <div class="completion-text" id="weeklyCompletionText">0 / 5 Completed</div>
+                        </div>
+
+                        <ul class="quest-list" id="weeklyQuests">
+                            <li class="quest-item" data-quest="weekly-working">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">🕯️</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Perform One Full Working</div>
+                                    <div class="quest-description">
+                                        Complete a full ritual working: protection, healing, cleansing, or manifestation. Document all steps, materials, and results.
+                                    </div>
+                                    <div class="quest-reward">+15 Mixed Points (5 each virtue)</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="weekly-cleanse">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚖️</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Cleanse Your Studiolo</div>
+                                    <div class="quest-description">
+                                        Perform a thorough cleansing: sound (bell/clapping), water (moon water or salt water), and seal with three knocks.
+                                    </div>
+                                    <div class="quest-reward">+8 Ma'at Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="weekly-document">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">🌙</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Document 3+ Workings</div>
+                                    <div class="quest-description">
+                                        Log at least three practice sessions, observations, or workings in your grimoire with full details.
+                                    </div>
+                                    <div class="quest-reward">+10 Thoth Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="weekly-esperanto">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">🌙</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Practice Esperanto 3x</div>
+                                    <div class="quest-description">
+                                        Study and practice Esperanto at least three times this week. Learn new phrases, review vocabulary, or practice pronunciation.
+                                    </div>
+                                    <div class="quest-reward">+9 Thoth Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="weekly-timing">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚡</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Sync Working with Moon Phase</div>
+                                    <div class="quest-description">
+                                        Perform at least one working timed to the appropriate moon phase (new for beginnings, full for power, waning for release).
+                                    </div>
+                                    <div class="quest-reward">+10 Caerus Points</div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div class="quest-timer" id="weeklyTimer" style="text-align: center; font-size: 1rem; margin-top: 20px;">
+                            Resets in: Calculating...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Quests Panel -->
+            <div id="monthlyPanel" class="quest-panel">
+                <div class="card">
+                    <div class="card-content">
+                        <h2 class="card-title">Monthly Quests</h2>
+                        <p style="text-align: center; color: var(--maat-silver); margin-bottom: 20px;">
+                            <em>Resets on the 1st of each month</em>
+                        </p>
+
+                        <div class="completion-bar">
+                            <div class="completion-fill" id="monthlyCompletion" style="width: 0%"></div>
+                            <div class="completion-text" id="monthlyCompletionText">0 / 5 Completed</div>
+                        </div>
+
+                        <ul class="quest-list" id="monthlyQuests">
+                            <li class="quest-item" data-quest="monthly-quiz">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">🌙</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Complete Volume Quiz</div>
+                                    <div class="quest-description">
+                                        Test your knowledge by completing a quiz on any grimoire volume. Score 80% or higher to earn credit.
+                                    </div>
+                                    <div class="quest-reward">+20 Thoth Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="monthly-cycle">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚡</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Track Full Moon Cycle</div>
+                                    <div class="quest-description">
+                                        Observe and document an entire lunar cycle from new moon to new moon. Note changes in energy and appropriate workings.
+                                    </div>
+                                    <div class="quest-reward">+15 Caerus Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="monthly-herb">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">🌙</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Master New Herb</div>
+                                    <div class="quest-description">
+                                        Research, work with, and master one new herb: study its properties, use it in at least 3 workings, document results.
+                                    </div>
+                                    <div class="quest-reward">+12 Thoth Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="monthly-phases">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚡</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">Work in Each Moon Phase</div>
+                                    <div class="quest-description">
+                                        Perform at least one working during each major moon phase this month: new, waxing, full, and waning.
+                                    </div>
+                                    <div class="quest-reward">+25 Caerus Points</div>
+                                </div>
+                            </li>
+
+                            <li class="quest-item" data-quest="monthly-practice">
+                                <div class="quest-checkbox" onclick="toggleQuest(this)"></div>
+                                <div class="quest-icon">⚖️</div>
+                                <div class="quest-content">
+                                    <div class="quest-title">20+ Documented Practices</div>
+                                    <div class="quest-description">
+                                        Maintain consistent practice by documenting at least 20 sessions, workings, or observations this month.
+                                    </div>
+                                    <div class="quest-reward">+30 Ma'at Points</div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div class="quest-timer" id="monthlyTimer" style="text-align: center; font-size: 1rem; margin-top: 20px;">
+                            Resets in: Calculating...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rank-Up Requirements Panel -->
+            <div id="rankupPanel" class="quest-panel">
+                <div class="card">
+                    <div class="card-content">
+                        <h2 class="card-title">Rank Advancement Requirements</h2>
+                        <p style="text-align: center; color: var(--maat-silver); margin-bottom: 20px;">
+                            <em>Complete ALL requirements + pass quiz to advance</em>
+                        </p>
+
+                        <!-- Current Rank Progress -->
+                        <div class="rank-requirement">
+                            <h3 style="color: var(--caerus-bright); text-align: center; margin-bottom: 15px;">
+                                Current Goal: <span id="nextRankName">Apprentice</span>
+                            </h3>
+
+                            <ul class="requirement-list" id="rankRequirements">
+                                <!-- Will be populated by JavaScript -->
+                            </ul>
+
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="quiz-button" id="takeQuizButton" onclick="takeRankQuiz()" disabled>
+                                    📜 Take Rank-Up Quiz
+                                </button>
+                                <p style="color: var(--maat-silver); font-size: 0.9rem; margin-top: 10px;">
+                                    Complete all requirements to unlock quiz
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- All Rank Requirements Overview -->
+                        <div style="margin-top: 40px;">
+                            <h3 style="color: var(--caerus-bright); text-align: center; margin-bottom: 20px;">
+                                Complete Rank Progression
+                            </h3>
+
+                            <div class="rank-requirement">
+                                <h4 style="color: var(--thoth-bright);">Novice → Apprentice (50 points)</h4>
+                                <ul style="list-style-position: inside; margin-left: 20px; color: var(--maat-silver);">
+                                    <li>Complete 5 workings</li>
+                                    <li>Read 1 grimoire volume</li>
+                                    <li>Study 3 herbs</li>
+                                    <li>Cleanse studiolo 3 times</li>
+                                    <li>Pass Novice Quiz (75%+)</li>
+                                </ul>
+                            </div>
+
+                            <div class="rank-requirement">
+                                <h4 style="color: var(--thoth-bright);">Apprentice → Journeyman (150 points)</h4>
+                                <ul style="list-style-position: inside; margin-left: 20px; color: var(--maat-silver);">
+                                    <li>Complete 15 workings</li>
+                                    <li>Read 3 grimoire volumes</li>
+                                    <li>Master 5 different herbs</li>
+                                    <li>Work in 3 different moon phases</li>
+                                    <li>7-day practice streak</li>
+                                    <li>Pass Apprentice Quiz (80%+)</li>
+                                </ul>
+                            </div>
+
+                            <div class="rank-requirement">
+                                <h4 style="color: var(--thoth-bright);">Journeyman → Adept (300 points)</h4>
+                                <ul style="list-style-position: inside; margin-left: 20px; color: var(--maat-silver);">
+                                    <li>Complete 40 workings</li>
+                                    <li>Read all 5 grimoire volumes</li>
+                                    <li>Master 10 different herbs</li>
+                                    <li>Use planetary hours 10 times</li>
+                                    <li>Document 3 synchronicities</li>
+                                    <li>14-day practice streak</li>
+                                    <li>Pass Journeyman Quiz (85%+)</li>
+                                </ul>
+                            </div>
+
+                            <div class="rank-requirement">
+                                <h4 style="color: var(--thoth-bright);">Adept → Master (500 points)</h4>
+                                <ul style="list-style-position: inside; margin-left: 20px; color: var(--maat-silver);">
+                                    <li>Complete 75 workings</li>
+                                    <li>Master 15 different herbs</li>
+                                    <li>Track 5 full moon cycles</li>
+                                    <li>Perfect timing on 10 workings</li>
+                                    <li>30-day practice streak</li>
+                                    <li>Complete 2 specialization paths to 50%</li>
+                                    <li>Pass Adept Quiz (90%+)</li>
+                                </ul>
+                            </div>
+
+                            <div class="rank-requirement">
+                                <h4 style="color: var(--thoth-bright);">Master → Sage (750 points)</h4>
+                                <ul style="list-style-position: inside; margin-left: 20px; color: var(--maat-silver);">
+                                    <li>Complete 100 workings</li>
+                                    <li>Master 20 different herbs</li>
+                                    <li>Track 10 full moon cycles</li>
+                                    <li>Document 10 major synchronicities</li>
+                                    <li>60-day practice streak</li>
+                                    <li>Complete 3 specialization paths fully</li>
+                                    <li>Pass Master Quiz (95%+)</li>
+                                </ul>
+                            </div>
+
+                            <div class="rank-requirement">
+                                <h4 style="color: var(--thoth-bright);">Sage → Grandmaster (1000+ points)</h4>
+                                <ul style="list-style-position: inside; margin-left: 20px; color: var(--maat-silver);">
+                                    <li>Complete 150 workings</li>
+                                    <li>Master 25 different herbs</li>
+                                    <li>All specialization paths completed</li>
+                                    <li>100-day practice streak</li>
+                                    <li>Document transformation working</li>
+                                    <li>Achieve 200+ points in each virtue</li>
+                                    <li>Pass Sage Quiz (100%)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p class="colophon">The Path of Progress</p>
+            <div class="colophon-symbols">🌙 ⚖️ ⚡</div>
+            <p style="font-style: italic; color: var(--maat-silver);">
+                "Each step forward is a step toward mastery"
+            </p>
+        </footer>
+    </div>
+
+    <script src="js/quests.js"></script>
+</body>
+</html>
