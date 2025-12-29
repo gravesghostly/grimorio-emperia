@@ -2602,78 +2602,55 @@
             font-weight: 600;
         }
 
-        /* Quill Rich Text Editor Styling */
-        .ql-toolbar {
-            background: rgba(0, 0, 0, 0.4) !important;
-            border: 2px solid var(--mystic-purple) !important;
-            border-bottom: none !important;
-            border-radius: 8px 8px 0 0 !important;
+        /* Rich Text Editor Styling */
+        .editor-toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--mystic-purple);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            flex-wrap: wrap;
         }
 
-        .ql-container {
-            background: rgba(0, 0, 0, 0.3) !important;
-            border: 2px solid var(--mystic-purple) !important;
-            border-top: none !important;
-            border-radius: 0 0 8px 8px !important;
-            font-family: 'Cormorant Garamond', serif !important;
+        .editor-toolbar button {
+            padding: 6px 10px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--caerus-bright);
+            color: var(--text-primary);
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
         }
 
-        .ql-editor {
-            color: var(--text-primary) !important;
-            min-height: 120px !important;
-            padding: 15px !important;
+        .editor-toolbar button:hover {
+            background: rgba(212, 175, 55, 0.4);
+            border-color: var(--caerus-glow);
         }
 
-        .ql-editor.ql-blank::before {
-            color: var(--text-secondary) !important;
-            font-style: italic;
+        .editor-toolbar button.active {
+            background: var(--caerus-bright);
+            color: var(--void-black);
         }
 
-        .ql-toolbar button:hover,
-        .ql-toolbar button.ql-active,
-        .ql-toolbar button:focus {
-            color: var(--caerus-gold) !important;
+        .editor-content {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--mystic-purple);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 15px;
+            min-height: 150px;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--text-primary);
+            outline: none;
+            line-height: 1.6;
         }
 
-        .ql-stroke {
-            stroke: var(--text-primary) !important;
-        }
-
-        .ql-stroke.ql-active,
-        .ql-stroke.ql-hover,
-        .ql-picker-label {
-            stroke: var(--caerus-gold) !important;
-        }
-
-        .ql-fill,
-        .ql-stroke.ql-fill {
-            fill: var(--text-primary) !important;
-        }
-
-        .ql-fill.ql-active,
-        .ql-fill.ql-hover,
-        .ql-stroke.ql-fill.ql-active,
-        .ql-stroke.ql-fill.ql-hover {
-            fill: var(--caerus-gold) !important;
-        }
-
-        .ql-picker {
-            color: var(--text-primary) !important;
-        }
-
-        .ql-picker-options {
-            background: var(--void-black) !important;
-            border: 1px solid var(--mystic-purple) !important;
-        }
-
-        .ql-picker-item {
-            color: var(--text-primary) !important;
-        }
-
-        .ql-picker-item.ql-selected,
-        .ql-picker-item:hover {
-            color: var(--caerus-gold) !important;
-            background: rgba(212, 175, 32, 0.1) !important;
+        .editor-content:focus {
+            border-color: var(--caerus-bright);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -3012,7 +2989,14 @@
 
                                 <div class="profile-field-compact" style="border-top: 1px solid rgba(212, 175, 55, 0.2); padding-top: 20px; margin-top: 20px;">
                                     <label class="field-label-compact">📓 In-Character Reflection</label>
-                                    <div id="editJournalReflection" style="min-height: 150px; background: rgba(0, 0, 0, 0.3); border: 2px solid var(--mystic-purple); border-radius: 8px;"></div>
+                                    <div class="editor-toolbar">
+                                        <button onclick="formatJournal('bold')" title="Bold"><strong>B</strong></button>
+                                        <button onclick="formatJournal('italic')" title="Italic"><em>I</em></button>
+                                        <button onclick="formatJournal('underline')" title="Underline"><u>U</u></button>
+                                        <button onclick="formatJournal('strikethrough')" title="Strikethrough"><s>S</s></button>
+                                        <button onclick="formatJournal('removeFormat')" title="Clear Format">✕ Format</button>
+                                    </div>
+                                    <div class="editor-content" id="editJournalReflection" contenteditable="true" placeholder="Write your reflection..."></div>
                                 </div>
 
                                 <button class="save-btn-compact" onclick="saveProfileChanges()">💾 Save All Changes</button>
@@ -3060,7 +3044,14 @@
                                 <option value="personal">💭 Personal</option>
                             </select>
                             
-                            <div id="noteContentEditor" style="min-height: 150px; background: rgba(0, 0, 0, 0.3); border: 2px solid var(--mystic-purple); border-radius: 8px; margin-bottom: 12px;"></div>
+                            <div class="editor-toolbar">
+                                <button onclick="formatNote('bold')" title="Bold"><strong>B</strong></button>
+                                <button onclick="formatNote('italic')" title="Italic"><em>I</em></button>
+                                <button onclick="formatNote('underline')" title="Underline"><u>U</u></button>
+                                <button onclick="formatNote('strikethrough')" title="Strikethrough"><s>S</s></button>
+                                <button onclick="formatNote('removeFormat')" title="Clear Format">✕ Format</button>
+                            </div>
+                            <div class="editor-content" id="noteContentEditor" contenteditable="true" placeholder="Write your note..."></div>
                             
                             <button class="save-btn-compact" onclick="saveNote()" style="width: 100%;">💾 Save Note</button>
                         </div>
@@ -4446,10 +4437,6 @@
     <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <!-- Quill Rich Text Editor -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-
     <script>
         // Configuration
         const IMGBB_API_KEY = 'fecb6b8c48020815465bbc22d8c0e7b0';
@@ -5715,7 +5702,7 @@
                 }
 
                 // Load journal reflection
-                document.getElementById('editJournalReflection').value = data.journalReflection || '';
+                document.getElementById('editJournalReflection').innerHTML = data.journalReflection || '';
             }
             
             // Load profile photo in edit mode
@@ -5823,11 +5810,15 @@
         // Save journal reflection standalone
         function saveJournalReflection() {
             const richProfile = JSON.parse(localStorage.getItem('grimorioProfile') || '{}');
-            richProfile.journalReflection = document.getElementById('editJournal').value.trim() || richProfile.journalReflection || '';
+            const content = getJournalContent();
+            richProfile.journalReflection = content || richProfile.journalReflection || '';
             localStorage.setItem('grimorioProfile', JSON.stringify(richProfile));
             alert('📓 Reflection saved!');
             // Add to activity feed
             addActivityFeedItem('📓', 'Saved journal reflection', 'Journal updated');
+            // Clear editor
+            const editor = document.getElementById('editJournalReflection');
+            if (editor) editor.innerHTML = '';
             loadJournalView(richProfile);
         }
 
@@ -5874,7 +5865,7 @@
             richProfile.patronVirtue = document.getElementById('editPatronVirtue').value || richProfile.patronVirtue || 'thoth';
             richProfile.backstory = document.getElementById('editBackstory').value.trim() || richProfile.backstory || '';
             
-            // Save journal reflection from Quill editor
+            // Save journal reflection from editor
             richProfile.journalReflection = getJournalContent() || richProfile.journalReflection || '';
             
             // Parse oath date
@@ -5938,7 +5929,8 @@
             
             // Clear form
             document.getElementById('noteCategory').value = '';
-            if (noteEditor) noteEditor.setContents([]);
+            const noteField = document.getElementById('noteContentEditor');
+            if (noteField) noteField.innerHTML = '';
             
             // Reload notes display
             loadNotesCompact();
@@ -5968,29 +5960,8 @@
             
             container.innerHTML = notes.slice(0, 10).map(note => {
                 const date = new Date(note.date);
-                // Parse rich text content if it's JSON (Quill format), otherwise treat as plain text
-                let displayContent = note.content;
-                try {
-                    const parsed = JSON.parse(note.content);
-                    if (parsed.ops) {
-                        // Convert Quill Delta to HTML
-                        displayContent = parsed.ops.map(op => {
-                            if (op.insert) {
-                                let text = String(op.insert).replace(/\n/g, '<br>');
-                                if (op.attributes) {
-                                    if (op.attributes.bold) text = `<strong>${text}</strong>`;
-                                    if (op.attributes.italic) text = `<em>${text}</em>`;
-                                    if (op.attributes.underline) text = `<u>${text}</u>`;
-                                }
-                                return text;
-                            }
-                            return '';
-                        }).join('');
-                    }
-                } catch (e) {
-                    // Not JSON, use as-is
-                    displayContent = note.content.replace(/\n/g, '<br>');
-                }
+                // Content is already in HTML format from editor
+                let displayContent = note.content || '<em>No content</em>';
                 
                 return `
                     <div class="note-item-compact" id="note-${note.id}">
@@ -6634,74 +6605,36 @@
             updateToolkitProgress();
         }
 
-        // Quill Editor Instances
-        let journalEditor = null;
-        let noteEditor = null;
-
-        // Initialize Quill Rich Text Editors
+        // Initialize editors (contenteditable divs are ready in DOM)
         function initializeQuillEditors() {
-            // Guard against missing library
-            if (typeof Quill === 'undefined') {
-                console.warn('Quill not available; skipping rich text editors.');
-                return;
-            }
-
-            // Journal Reflection Editor
-            try {
-                journalEditor = new Quill('#editJournalReflection', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline'],
-                        ['blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link']
-                    ]
-                },
-                placeholder: 'Write your thoughts about your journey through the Three Virtues...'
-                });
-            } catch (e) {
-                console.warn('Failed to init journal editor:', e);
-            }
-
-            // Note Editor
-            try {
-                noteEditor = new Quill('#noteContentEditor', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline'],
-                        ['blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['code-block'],
-                        ['link']
-                    ]
-                },
-                placeholder: 'Write your note...'
-                });
-            } catch (e) {
-                console.warn('Failed to init notes editor:', e);
-            }
-
-            // Load saved reflection into journal editor
-            const saved = localStorage.getItem('grimorioProfile');
-            if (saved) {
-                const data = JSON.parse(saved);
-                if (data.journalReflection) {
-                    journalEditor.setContents(JSON.parse(data.journalReflection));
-                }
-            }
+            // No initialization needed; editors are ready.
         }
 
-        // Update save functions to use Quill content
+        // Get content from editor (as HTML)
         function getJournalContent() {
-            if (!journalEditor) return '';
-            return JSON.stringify(journalEditor.getContents());
+            const el = document.getElementById('editJournalReflection');
+            if (!el) return '';
+            const html = el.innerHTML.trim();
+            return html && html !== '<br>' ? html : '';
         }
 
         function getNoteContent() {
-            if (!noteEditor) return '';
-            return JSON.stringify(noteEditor.getContents());
+            const el = document.getElementById('noteContentEditor');
+            if (!el) return '';
+            const html = el.innerHTML.trim();
+            return html && html !== '<br>' ? html : '';
+        }
+
+        // Formatting functions for journal
+        function formatJournal(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('editJournalReflection').focus();
+        }
+
+        // Formatting functions for notes
+        function formatNote(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('noteContentEditor').focus();
         }
 
         // Initialize
@@ -6718,7 +6651,7 @@
             // Load profile edit mode data
             loadProfileEdit();
 
-            // Initialize Quill Rich Text Editors
+            // Initialize Rich Text Editors
             initializeQuillEditors();
             
             // Initialize Quest System
