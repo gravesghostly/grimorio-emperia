@@ -1087,6 +1087,31 @@
             display: block;
         }
 
+        /* Activity and Profile Sub-tabs */
+        .activity-subtab,
+        .profile-subtab {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .activity-subtab.active,
+        .profile-subtab.active {
+            color: var(--caerus-gold);
+            border-bottom-color: var(--caerus-gold);
+        }
+
+        .activity-subtab:hover,
+        .profile-subtab:hover {
+            color: var(--text-primary);
+        }
+
         .progress-badge {
             background: rgba(218, 165, 32, 0.2);
             border: 2px solid var(--caerus-gold);
@@ -2799,72 +2824,124 @@
                         <!-- Tabs will be populated by JavaScript based on active section -->
                     </div>
 
-                    <!-- Activity Tab (Dashboard Section) -->
+                    <!-- Activity Tab (Dashboard Section with Sub-tabs) -->
                     <div id="activityTabContent" class="main-tab-content active">
-                        <!-- Quests Section -->
-                        <h3 class="activity-title">⭐ Daily Quests & Challenges</h3>
+                        <!-- Activity Sub-tabs -->
+                        <div class="activity-subtabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid rgba(212, 175, 55, 0.2); flex-wrap: wrap;">
+                            <button class="activity-subtab active" onclick="switchActivityTab('feed')" data-tab="feed">🆕 Activity</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('daily')" data-tab="daily">📅 Daily Quests</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('weekly')" data-tab="weekly">📆 Weekly Quests</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('monthly')" data-tab="monthly">📊 Monthly Quests</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('progress')" data-tab="progress">📈 Progress</button>
+                        </div>
+
                         <div id="debugBadge" class="debug-badge">🐞 Debug: initializing…</div>
                         <button id="debugCompleteDailyBtn" class="debug-action-btn" onclick="completeAllDailyQuestsDebug()">Complete all daily quests</button>
                         <button id="debugCompleteWeeklyBtn" class="debug-action-btn" onclick="completeAllWeeklyQuestsDebug()">Complete all weekly quests</button>
                         <button id="debugCompleteMonthlyBtn" class="debug-action-btn" onclick="completeAllMonthlyQuestsDebug()">Complete all monthly quests</button>
-                        
-                        <!-- Daily Quests -->
-                        <div class="quest-section">
-                            <div class="quest-section-header">📅 Daily Quests</div>
-                            <div class="quest-timer">
-                                <div class="quest-timer-label">Resets in</div>
-                                <div class="quest-timer-value" id="dailyTimer">--:--:--</div>
-                            </div>
-                            <div class="quest-grid" id="dailyQuests">
-                                <!-- Daily quests will be populated here -->
+
+                        <!-- Activity Feed Tab -->
+                        <div id="activityTab" class="activity-sub-content" style="display: block;">
+                            <h3 class="activity-title">🆕 Recent Activity</h3>
+                            <div id="activityFeed">
+                                <div class="activity-item" style="opacity: 0.5; text-align: center; padding: 30px;">
+                                    <div class="activity-content">
+                                        <div class="activity-text">No activities yet. Complete quests, write journal entries, or log workings to see your activity here!</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Weekly Quests -->
-                        <div class="quest-section">
-                            <div class="quest-section-header">📆 Weekly Quests</div>
-                            <div class="quest-timer">
-                                <div class="quest-timer-label">Resets in</div>
-                                <div class="quest-timer-value" id="weeklyTimer">--:--:--</div>
-                            </div>
-                            <div class="quest-grid" id="weeklyQuests">
-                                <!-- Weekly quests will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Monthly Quests -->
-                        <div class="quest-section">
-                            <div class="quest-section-header">📊 Monthly Quests</div>
-                            <div class="quest-timer">
-                                <div class="quest-timer-label">Resets in</div>
-                                <div class="quest-timer-value" id="monthlyTimer">--:--:--</div>
-                            </div>
-                            <div class="quest-grid" id="monthlyQuests">
-                                <!-- Monthly quests will be populated here -->
+                        <!-- Daily Quests Tab -->
+                        <div id="dailyTab" class="activity-sub-content" style="display: none;">
+                            <h3 class="activity-title">📅 Daily Quests</h3>
+                            <div class="quest-section">
+                                <div class="quest-timer">
+                                    <div class="quest-timer-label">Resets in</div>
+                                    <div class="quest-timer-value" id="dailyTimer">--:--:--</div>
+                                </div>
+                                <div class="quest-grid" id="dailyQuests">
+                                    <!-- Daily quests will be populated here -->
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Activity Feed Section -->
-                        <h3 class="activity-title" style="margin-top: 40px;">🆕 Recent Activity</h3>
-                        <div id="activityFeed">
-                            <div class="activity-item" style="opacity: 0.5; text-align: center; padding: 30px;">
-                                <div class="activity-content">
-                                    <div class="activity-text">No activities yet. Complete quests, write journal entries, or log workings to see your activity here!</div>
+                        <!-- Weekly Quests Tab -->
+                        <div id="weeklyTab" class="activity-sub-content" style="display: none;">
+                            <h3 class="activity-title">📆 Weekly Quests</h3>
+                            <div class="quest-section">
+                                <div class="quest-timer">
+                                    <div class="quest-timer-label">Resets in</div>
+                                    <div class="quest-timer-value" id="weeklyTimer">--:--:--</div>
+                                </div>
+                                <div class="quest-grid" id="weeklyQuests">
+                                    <!-- Weekly quests will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Quests Tab -->
+                        <div id="monthlyTab" class="activity-sub-content" style="display: none;">
+                            <h3 class="activity-title">📊 Monthly Quests</h3>
+                            <div class="quest-section">
+                                <div class="quest-timer">
+                                    <div class="quest-timer-label">Resets in</div>
+                                    <div class="quest-timer-value" id="monthlyTimer">--:--:--</div>
+                                </div>
+                                <div class="quest-grid" id="monthlyQuests">
+                                    <!-- Monthly quests will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Tab -->
+                        <div id="progressTab" class="activity-sub-content" style="display: none;">
+                            <h3 class="activity-title">📈 Progress Overview</h3>
+                            <div class="progress-overview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <div class="progress-card" style="background: rgba(74, 125, 199, 0.15); padding: 15px; border-radius: 8px; border-left: 4px solid var(--thoth-blue);">
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">🌙 Thoth (Wisdom)</div>
+                                    <div style="font-size: 1.8rem; font-weight: 600;" id="progressThoth">0</div>
+                                    <div class="progress-bar" style="margin-top: 8px;">
+                                        <div class="progress-fill" id="progressThothBar" style="width: 0%; background: var(--thoth-blue);"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-card" style="background: rgba(192, 208, 232, 0.15); padding: 15px; border-radius: 8px; border-left: 4px solid var(--maat-silver);">
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">⚖️ Ma'at (Balance)</div>
+                                    <div style="font-size: 1.8rem; font-weight: 600;" id="progressMaat">0</div>
+                                    <div class="progress-bar" style="margin-top: 8px;">
+                                        <div class="progress-fill" id="progressMaatBar" style="width: 0%; background: var(--maat-silver);"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-card" style="background: rgba(218, 165, 32, 0.15); padding: 15px; border-radius: 8px; border-left: 4px solid var(--caerus-gold);">
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">⚡ Caerus (Timing)</div>
+                                    <div style="font-size: 1.8rem; font-weight: 600;" id="progressCaerus">0</div>
+                                    <div class="progress-bar" style="margin-top: 8px;">
+                                        <div class="progress-fill" id="progressCaerusBar" style="width: 0%; background: var(--caerus-gold);"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Profile Tab -->
+                    <!-- Profile Tab with Sub-tabs -->
                     <div id="profileTabContent" class="main-tab-content">
-                        <div class="profile-view-header">
-                            <h3 class="activity-title">👤 Character Profile</h3>
-                            <button class="toggle-edit-btn" onclick="toggleProfileEdit()" id="profileToggleBtn">
-                                ✏️ Edit Mode
-                            </button>
+                        <!-- Profile Sub-tabs -->
+                        <div class="profile-subtabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid rgba(212, 175, 55, 0.2); flex-wrap: wrap;">
+                            <button class="profile-subtab active" onclick="switchProfileTab('profile')" data-tab="profile">👤 Profile</button>
+                            <button class="profile-subtab" onclick="switchProfileTab('achievements')" data-tab="achievements">🏆 Achievements</button>
+                            <button class="profile-subtab" onclick="switchProfileTab('reflection')" data-tab="reflection">📓 Reflection Journal</button>
                         </div>
-                        
-                        <!-- VIEW MODE -->
+
+                        <!-- Profile Sub-tab Content -->
+                        <div id="profileSubTab" class="profile-sub-content" style="display: block;">
+                            <div class="profile-view-header">
+                                <h3 class="activity-title">👤 Character Profile</h3>
+                                <button class="toggle-edit-btn" onclick="toggleProfileEdit()" id="profileToggleBtn">
+                                    ✏️ Edit Mode
+                                </button>
+                            </div>
+                            
+                            <!-- VIEW MODE -->
                         <div id="profileViewMode" class="profile-view-mode">
                             <div class="profile-display-card">
                                 <div class="profile-section-header">📸 Profile Photo</div>
@@ -3011,18 +3088,49 @@
                                 <!-- Specializations will be populated here -->
                             </div>
                         </div>
+                        </div><!-- Close profileSubTab -->
 
-                        <!-- Reflection Journal (in view mode) -->
-                        <div id="profileJournal" style="display: none; margin-top: 30px; border-top: 1px solid rgba(212, 175, 55, 0.2); padding-top: 20px;">
-                            <h4 style="color: var(--caerus-gold); margin-bottom: 15px;">📓 In-Character Reflection</h4>
-                            <div style="background: rgba(26, 35, 50, 0.6); padding: 15px; border-radius: 10px; border-left: 4px solid var(--caerus-bright);">
-                                <p id="journalText" style="font-style: italic; color: var(--maat-bright); line-height: 1.8; min-height: 60px;">
-                                    No reflection yet. Share your thoughts about your journey through the Three Virtues.
-                                </p>
+                        <!-- Achievements Sub-tab -->
+                        <div id="achievementsSubTab" class="profile-sub-content" style="display: none;">
+                            <h3 class="activity-title">🏆 Achievements & Badges</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; padding: 20px;">
+                                <div style="text-align: center; padding: 15px; background: rgba(218, 165, 32, 0.1); border-radius: 8px; border: 2px solid rgba(218, 165, 32, 0.3);">
+                                    <div style="font-size: 2rem; margin-bottom: 8px;">🌱</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-secondary);">First Steps</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: rgba(192, 208, 232, 0.1); border-radius: 8px; border: 2px dashed rgba(192, 208, 232, 0.3);">
+                                    <div style="font-size: 2rem; margin-bottom: 8px; opacity: 0.5;">⭐</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Locked</div>
+                                </div>
                             </div>
-                            <div style="margin-top: 12px;">
-                                <textarea class="field-textarea-compact" id="editJournal" placeholder="Write your in-character reflection..."></textarea>
-                                <button class="save-btn-compact" onclick="saveJournalReflection()" style="margin-top: 8px;">💾 Save Reflection</button>
+                        </div>
+
+                        <!-- Reflection Journal Sub-tab -->
+                        <div id="reflectionSubTab" class="profile-sub-content" style="display: none;">
+                            <h3 class="activity-title">📓 In-Character Reflection</h3>
+                            
+                            <!-- Reflection View -->
+                            <div id="reflectionViewMode" style="margin-bottom: 30px;">
+                                <div style="background: rgba(26, 35, 50, 0.6); padding: 20px; border-radius: 10px; border-left: 4px solid var(--caerus-bright); margin-bottom: 15px;">
+                                    <p id="reflectionText" style="font-style: italic; color: var(--maat-bright); line-height: 1.8; min-height: 100px;">
+                                        No reflection yet. Share your thoughts about your journey through the Three Virtues.
+                                    </p>
+                                </div>
+                                <button class="save-btn-compact" onclick="toggleReflectionEdit()">✏️ Edit Reflection</button>
+                            </div>
+
+                            <!-- Reflection Edit -->
+                            <div id="reflectionEditMode" style="display: none;">
+                                <div class="editor-toolbar">
+                                    <button onclick="formatJournal('bold')" title="Bold"><strong>B</strong></button>
+                                    <button onclick="formatJournal('italic')" title="Italic"><em>I</em></button>
+                                    <button onclick="formatJournal('underline')" title="Underline"><u>U</u></button>
+                                    <button onclick="formatJournal('strikethrough')" title="Strikethrough"><s>S</s></button>
+                                    <button onclick="formatJournal('removeFormat')" title="Clear Format">✕ Format</button>
+                                </div>
+                                <div class="editor-content" id="reflectionEditor" contenteditable="true" placeholder="Write your in-character reflection..." style="margin-bottom: 15px;"></div>
+                                <button class="save-btn-compact" onclick="saveReflectionJournal()" style="margin-right: 8px;">💾 Save</button>
+                                <button class="save-btn-compact" onclick="toggleReflectionEdit()" style="background: rgba(192, 208, 232, 0.3);">✕ Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -6045,6 +6153,142 @@
             
             // Add active class to clicked subtab
             event.target.classList.add('active');
+        }
+
+        // Switch Activity Sub-tabs
+        function switchActivityTab(tabName) {
+            // Hide all activity sub-content
+            document.querySelectorAll('.activity-sub-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Remove active class from all activity subtabs
+            document.querySelectorAll('.activity-subtab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected subtab content
+            const tabMap = {
+                'feed': 'activityTab',
+                'daily': 'dailyTab',
+                'weekly': 'weeklyTab',
+                'monthly': 'monthlyTab',
+                'progress': 'progressTab'
+            };
+            const tabId = tabMap[tabName];
+            if (document.getElementById(tabId)) {
+                document.getElementById(tabId).style.display = 'block';
+            }
+            
+            // Add active class to clicked subtab
+            event.target.classList.add('active');
+            
+            // Update progress display when switching to progress tab
+            if (tabName === 'progress') {
+                updateProgressDisplay();
+            }
+        }
+
+        // Switch Profile Sub-tabs
+        function switchProfileTab(tabName) {
+            // Hide all profile sub-content
+            document.querySelectorAll('.profile-sub-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Remove active class from all profile subtabs
+            document.querySelectorAll('.profile-subtab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected subtab content
+            const tabMap = {
+                'profile': 'profileSubTab',
+                'achievements': 'achievementsSubTab',
+                'reflection': 'reflectionSubTab'
+            };
+            const tabId = tabMap[tabName];
+            if (document.getElementById(tabId)) {
+                document.getElementById(tabId).style.display = 'block';
+            }
+            
+            // Add active class to clicked subtab
+            event.target.classList.add('active');
+            
+            // Load reflection content when switching to reflection tab
+            if (tabName === 'reflection') {
+                loadReflectionContent();
+            }
+        }
+
+        // Toggle reflection journal edit mode
+        function toggleReflectionEdit() {
+            const viewMode = document.getElementById('reflectionViewMode');
+            const editMode = document.getElementById('reflectionEditMode');
+            
+            if (editMode.style.display === 'none') {
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+                // Load current reflection into editor
+                const profile = loadProfile();
+                if (profile.journalReflection) {
+                    document.getElementById('reflectionEditor').innerHTML = profile.journalReflection;
+                }
+                document.getElementById('reflectionEditor').focus();
+            } else {
+                editMode.style.display = 'none';
+                viewMode.style.display = 'block';
+            }
+        }
+
+        // Load reflection content
+        function loadReflectionContent() {
+            const profile = loadProfile();
+            const reflectionText = document.getElementById('reflectionText');
+            if (profile.journalReflection && profile.journalReflection.trim()) {
+                reflectionText.innerHTML = profile.journalReflection;
+            } else {
+                reflectionText.innerHTML = 'No reflection yet. Share your thoughts about your journey through the Three Virtues.';
+            }
+        }
+
+        // Save reflection journal
+        function saveReflectionJournal() {
+            const content = document.getElementById('reflectionEditor').innerHTML.trim();
+            if (!content || content === '<br>') {
+                alert('Please write something in your reflection.');
+                return;
+            }
+            
+            const profile = loadProfile();
+            profile.journalReflection = content;
+            localStorage.setItem('grimorioProfile', JSON.stringify(profile));
+            
+            alert('📓 Reflection saved!');
+            addActivityFeedItem('📓', 'Updated reflection journal', 'Reflection saved');
+            loadReflectionContent();
+            toggleReflectionEdit();
+        }
+
+        // Update Progress Display in Progress Tab
+        function updateProgressDisplay() {
+            const profile = loadProfile();
+            
+            // Calculate progress percentages based on levels
+            const maxLevel = 6;
+            const thothPercent = Math.min((profile.thoth.level / maxLevel) * 100, 100);
+            const maatPercent = Math.min((profile.maat.level / maxLevel) * 100, 100);
+            const caerusPercent = Math.min((profile.caerus.level / maxLevel) * 100, 100);
+            
+            // Update displays
+            document.getElementById('progressThoth').textContent = profile.thoth.points;
+            document.getElementById('progressThothBar').style.width = thothPercent + '%';
+            
+            document.getElementById('progressMaat').textContent = profile.maat.points;
+            document.getElementById('progressMaatBar').style.width = maatPercent + '%';
+            
+            document.getElementById('progressCaerus').textContent = profile.caerus.points;
+            document.getElementById('progressCaerusBar').style.width = caerusPercent + '%';
         }
 
         function toggleCategory(categoryId) {
