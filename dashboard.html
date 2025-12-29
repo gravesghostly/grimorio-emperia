@@ -5256,6 +5256,15 @@
                     loadNotesCompact();
                 } else if (targetTab === 'toolkit') {
                     loadToolkitState();
+                } else if (section === 'dashboard') {
+                    // Ensure quests and activity feed render when switching via legacy switcher
+                    try {
+                        initializeQuestSystem();
+                        displayActivityFeed();
+                        updateDebugBadge(window.__debug || {});
+                    } catch (e) {
+                        console.warn('Dashboard initialization error (legacy switcher):', e);
+                    }
                 }
             }
         }
@@ -6543,8 +6552,15 @@
 
         // Initialize Quill Rich Text Editors
         function initializeQuillEditors() {
+            // Guard against missing library
+            if (typeof Quill === 'undefined') {
+                console.warn('Quill not available; skipping rich text editors.');
+                return;
+            }
+
             // Journal Reflection Editor
-            journalEditor = new Quill('#editJournalReflection', {
+            try {
+                journalEditor = new Quill('#editJournalReflection', {
                 theme: 'snow',
                 modules: {
                     toolbar: [
@@ -6555,10 +6571,14 @@
                     ]
                 },
                 placeholder: 'Write your thoughts about your journey through the Three Virtues...'
-            });
+                });
+            } catch (e) {
+                console.warn('Failed to init journal editor:', e);
+            }
 
             // Note Editor
-            noteEditor = new Quill('#noteContentEditor', {
+            try {
+                noteEditor = new Quill('#noteContentEditor', {
                 theme: 'snow',
                 modules: {
                     toolbar: [
@@ -6570,7 +6590,10 @@
                     ]
                 },
                 placeholder: 'Write your note...'
-            });
+                });
+            } catch (e) {
+                console.warn('Failed to init notes editor:', e);
+            }
 
             // Load saved reflection into journal editor
             const saved = localStorage.getItem('grimorioProfile');
