@@ -2828,11 +2828,11 @@
                     <div id="activityTabContent" class="main-tab-content active">
                         <!-- Activity Sub-tabs -->
                         <div class="activity-subtabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid rgba(212, 175, 55, 0.2); flex-wrap: wrap;">
-                            <button class="activity-subtab active" onclick="switchActivityTab('feed')" data-tab="feed">🆕 Activity</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('daily')" data-tab="daily">📅 Daily Quests</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('weekly')" data-tab="weekly">📆 Weekly Quests</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('monthly')" data-tab="monthly">📊 Monthly Quests</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('progress')" data-tab="progress">📈 Progress</button>
+                            <button class="activity-subtab active" onclick="switchActivityTab('feed', event)" data-tab="feed">🆕 Activity</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('daily', event)" data-tab="daily">📅 Daily Quests</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('weekly', event)" data-tab="weekly">📆 Weekly Quests</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('monthly', event)" data-tab="monthly">📊 Monthly Quests</button>
+                            <button class="activity-subtab" onclick="switchActivityTab('progress', event)" data-tab="progress">📈 Progress</button>
                         </div>
 
                         <div id="debugBadge" class="debug-badge">🐞 Debug: initializing…</div>
@@ -2927,9 +2927,9 @@
                     <div id="profileTabContent" class="main-tab-content">
                         <!-- Profile Sub-tabs -->
                         <div class="profile-subtabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid rgba(212, 175, 55, 0.2); flex-wrap: wrap;">
-                            <button class="profile-subtab active" onclick="switchProfileTab('profile')" data-tab="profile">👤 Profile</button>
-                            <button class="profile-subtab" onclick="switchProfileTab('achievements')" data-tab="achievements">🏆 Achievements</button>
-                            <button class="profile-subtab" onclick="switchProfileTab('reflection')" data-tab="reflection">📓 Reflection Journal</button>
+                            <button class="profile-subtab active" onclick="switchProfileTab('profile', event)" data-tab="profile">👤 Profile</button>
+                            <button class="profile-subtab" onclick="switchProfileTab('achievements', event)" data-tab="achievements">🏆 Achievements</button>
+                            <button class="profile-subtab" onclick="switchProfileTab('reflection', event)" data-tab="reflection">📓 Reflection Journal</button>
                         </div>
 
                         <!-- Profile Sub-tab Content -->
@@ -3181,8 +3181,8 @@
                         
                         <!-- Toolkit Sub-tabs -->
                         <div class="toolkit-subtabs">
-                            <button class="toolkit-subtab active" onclick="switchToolkitTab('physical')">🛒 Physical</button>
-                            <button class="toolkit-subtab" onclick="switchToolkitTab('digital')">📱 Digital</button>
+                            <button class="toolkit-subtab active" onclick="switchToolkitTab('physical', event)">🛒 Physical</button>
+                            <button class="toolkit-subtab" onclick="switchToolkitTab('digital', event)">📱 Digital</button>
                         </div>
 
                         <!-- Physical Tools -->
@@ -3474,23 +3474,23 @@
                         <div class="progress-overview">
                             <div class="progress-stat-card">
                                 <div class="progress-stat-icon">📚</div>
-                                <div class="progress-stat-value">28</div>
+                                <div class="progress-stat-value" id="totalWorkings">0</div>
                                 <div class="progress-stat-label">Total Workings</div>
                             </div>
                             <div class="progress-stat-card">
                                 <div class="progress-stat-icon">🔥</div>
-                                <div class="progress-stat-value">14</div>
-                                <div class="progress-stat-label">Day Streak</div>
+                                <div class="progress-stat-value" id="daysActive">0</div>
+                                <div class="progress-stat-label">Days Active</div>
                             </div>
                             <div class="progress-stat-card">
                                 <div class="progress-stat-icon">⭐</div>
-                                <div class="progress-stat-value">5</div>
+                                <div class="progress-stat-value" id="currentLevel">1</div>
                                 <div class="progress-stat-label">Level</div>
                             </div>
                             <div class="progress-stat-card">
                                 <div class="progress-stat-icon">✨</div>
-                                <div class="progress-stat-value">1,250</div>
-                                <div class="progress-stat-label">Total XP</div>
+                                <div class="progress-stat-value" id="xpDisplay">0 / 100</div>
+                                <div class="progress-stat-label">Experience</div>
                             </div>
                         </div>
 
@@ -3501,28 +3501,28 @@
                                 <div class="virtue-progress-item">
                                     <div class="virtue-progress-header">
                                         <span>🌙 Thoth (Wisdom)</span>
-                                        <span class="virtue-progress-rank">Journeyman • 420 pts</span>
+                                        <span class="virtue-progress-rank"><span id="thothRank">Rank: 1</span> • <span id="thothPoints">0</span> pts</span>
                                     </div>
                                     <div class="virtue-progress-bar">
-                                        <div class="virtue-progress-fill thoth" style="width: 68%"></div>
+                                        <div class="virtue-progress-fill thoth" style="width: 0%" id="thothProgress"></div>
                                     </div>
                                 </div>
                                 <div class="virtue-progress-item">
                                     <div class="virtue-progress-header">
                                         <span>⚖️ Ma'at (Balance)</span>
-                                        <span class="virtue-progress-rank">Apprentice • 285 pts</span>
+                                        <span class="virtue-progress-rank"><span id="maatRank">Rank: 1</span> • <span id="maatPoints">0</span> pts</span>
                                     </div>
                                     <div class="virtue-progress-bar">
-                                        <div class="virtue-progress-fill maat" style="width: 45%"></div>
+                                        <div class="virtue-progress-fill maat" style="width: 0%" id="maatProgress"></div>
                                     </div>
                                 </div>
                                 <div class="virtue-progress-item">
                                     <div class="virtue-progress-header">
                                         <span>⚡ Caerus (Timing)</span>
-                                        <span class="virtue-progress-rank">Apprentice • 198 pts</span>
+                                        <span class="virtue-progress-rank"><span id="caerusRank">Rank: 1</span> • <span id="caerusPoints">0</span> pts</span>
                                     </div>
                                     <div class="virtue-progress-bar">
-                                        <div class="virtue-progress-fill caerus" style="width: 33%"></div>
+                                        <div class="virtue-progress-fill caerus" style="width: 0%" id="caerusProgress"></div>
                                     </div>
                                 </div>
                             </div>
@@ -5305,25 +5305,25 @@
             const sectionTabs = {
                 dashboard: `<span class="section-subtitle">📋 Recent Activity Feed</span>`,
                 study: `
-                    <button class="main-tab active" onclick="switchMainTab('notes')">📝 Notes</button>
-                    <button class="main-tab" onclick="switchMainTab('workinglog')">🌿 Working Log</button>
+                    <button class="main-tab active" onclick="switchMainTab('notes', event)">📝 Notes</button>
+                    <button class="main-tab" onclick="switchMainTab('workinglog', event)">🌿 Working Log</button>
                 `,
                 volumes: `
-                    <button class="main-tab active" onclick="switchMainTab('volume1')">📖 Volume I</button>
-                    <button class="main-tab" onclick="switchMainTab('volume2')">📖 Volume II</button>
-                    <button class="main-tab" onclick="switchMainTab('volume3')">📖 Volume III</button>
-                    <button class="main-tab" onclick="switchMainTab('volume4')">📖 Volume IV</button>
-                    <button class="main-tab" onclick="switchMainTab('volume5')">📖 Volume V</button>
+                    <button class="main-tab active" onclick="switchMainTab('volume1', event)">📖 Volume I</button>
+                    <button class="main-tab" onclick="switchMainTab('volume2', event)">📖 Volume II</button>
+                    <button class="main-tab" onclick="switchMainTab('volume3', event)">📖 Volume III</button>
+                    <button class="main-tab" onclick="switchMainTab('volume4', event)">📖 Volume IV</button>
+                    <button class="main-tab" onclick="switchMainTab('volume5', event)">📖 Volume V</button>
                 `,
                 practice: `
-                    <button class="main-tab active" onclick="switchMainTab('toolkit')">🛠️ Toolkit</button>
-                    <button class="main-tab" onclick="switchMainTab('moon')">🌙 Moon Tracker</button>
-                    <button class="main-tab" onclick="switchMainTab('sigil')">✨ Sigil Generator</button>
-                    <button class="main-tab" onclick="switchMainTab('esperanto')">🗣️ Esperanto</button>
+                    <button class="main-tab active" onclick="switchMainTab('toolkit', event)">🛠️ Toolkit</button>
+                    <button class="main-tab" onclick="switchMainTab('moon', event)">🌙 Moon Tracker</button>
+                    <button class="main-tab" onclick="switchMainTab('sigil', event)">✨ Sigil Generator</button>
+                    <button class="main-tab" onclick="switchMainTab('esperanto', event)">🗣️ Esperanto</button>
                 `,
                 you: `
-                    <button class="main-tab active" onclick="switchMainTab('profile')">👤 Profile</button>
-                    <button class="main-tab" onclick="switchMainTab('progress')">📊 Progress</button>
+                    <button class="main-tab active" onclick="switchMainTab('profile', event)">👤 Profile</button>
+                    <button class="main-tab" onclick="switchMainTab('progress', event)">📊 Progress</button>
                 `
             };
             
@@ -6142,7 +6142,7 @@
         }
 
         // Toolkit Functions
-        function switchToolkitTab(tabName) {
+        function switchToolkitTab(tabName, event) {
             // Hide all toolkit subtab contents
             document.querySelectorAll('.toolkit-subtab-content').forEach(content => {
                 content.classList.remove('active');
@@ -6154,14 +6154,17 @@
             });
             
             // Show selected subtab content
-            document.getElementById(tabName + 'Toolkit').classList.add('active');
+            const toolkit = document.getElementById(tabName + 'Toolkit');
+            if (toolkit) toolkit.classList.add('active');
             
             // Add active class to clicked subtab
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
         }
 
         // Switch Activity Sub-tabs
-        function switchActivityTab(tabName) {
+        function switchActivityTab(tabName, event) {
             // Hide all activity sub-content
             document.querySelectorAll('.activity-sub-content').forEach(content => {
                 content.style.display = 'none';
@@ -6181,12 +6184,15 @@
                 'progress': 'progressTab'
             };
             const tabId = tabMap[tabName];
-            if (document.getElementById(tabId)) {
-                document.getElementById(tabId).style.display = 'block';
+            const tab = document.getElementById(tabId);
+            if (tab) {
+                tab.style.display = 'block';
             }
             
             // Add active class to clicked subtab
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             // Update progress display when switching to progress tab
             if (tabName === 'progress') {
@@ -6195,7 +6201,7 @@
         }
 
         // Switch Profile Sub-tabs
-        function switchProfileTab(tabName) {
+        function switchProfileTab(tabName, event) {
             // Hide all profile sub-content
             document.querySelectorAll('.profile-sub-content').forEach(content => {
                 content.style.display = 'none';
@@ -6213,12 +6219,15 @@
                 'reflection': 'reflectionSubTab'
             };
             const tabId = tabMap[tabName];
-            if (document.getElementById(tabId)) {
-                document.getElementById(tabId).style.display = 'block';
+            const tab = document.getElementById(tabId);
+            if (tab) {
+                tab.style.display = 'block';
             }
             
             // Add active class to clicked subtab
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             // Load reflection content when switching to reflection tab
             if (tabName === 'reflection') {
