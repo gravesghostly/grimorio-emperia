@@ -6233,6 +6233,34 @@
             };
         }
 
+        // Local RPG fallback: award experience directly to grimorioProfile
+        function awardExperienceLocal(virtue, amount, opts = {}) {
+            const richProfile = JSON.parse(localStorage.getItem('grimorioProfile') || '{}');
+            if (!richProfile.thoth || !richProfile.maat || !richProfile.caerus) {
+                richProfile.thoth = richProfile.thoth || { points: 0, level: 1 };
+                richProfile.maat = richProfile.maat || { points: 0, level: 1 };
+                richProfile.caerus = richProfile.caerus || { points: 0, level: 1 };
+            }
+            // Add virtue points and total points
+            const v = virtue.toLowerCase();
+            if (['thoth','maat','caerus'].includes(v)) {
+                richProfile[v].points = (richProfile[v].points || 0) + amount;
+                richProfile.totalPoints = (richProfile.totalPoints || 0) + amount;
+                // Recompute virtue level: 100 pts per level
+                richProfile[v].level = Math.floor((richProfile[v].points || 0) / 100) + 1;
+            }
+            // Increment workings for practice-type quests
+            if (opts.incrementWorkings) {
+                richProfile.totalWorkings = (richProfile.totalWorkings || 0) + 1;
+            }
+            // Persist
+            localStorage.setItem('grimorioProfile', JSON.stringify(richProfile));
+            // Update UI immediately
+            const profile = loadProfile();
+            updateUI(profile);
+            return richProfile;
+        }
+
         function loadQuests(frequency, quests) {
             const container = document.getElementById(`${frequency}Quests`);
             if (!container) return;
@@ -6276,9 +6304,12 @@
             questProgress[completedKey].push(questId);
             localStorage.setItem('questProgress', JSON.stringify(questProgress));
             
-            // Award experience using rpg-system.js
-            if (window.grimorioRPG) {
+            // Award experience: prefer rpg-system.js, otherwise fallback locally
+            if (window.grimorioRPG && typeof window.grimorioRPG.awardExperience === 'function') {
                 window.grimorioRPG.awardExperience(virtue, experience);
+            } else {
+                const incrementWorkings = questId.includes('practice');
+                awardExperienceLocal(virtue, experience, { incrementWorkings });
             }
             
             // Get quest name for activity feed
