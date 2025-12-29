@@ -14,6 +14,24 @@
             box-sizing: border-box;
         }
 
+        function updateActivityGreeting() {
+            const greetingEl = document.getElementById('activityGreeting');
+            if (!greetingEl) return;
+            let name = 'Scribe';
+            try {
+                const saved = localStorage.getItem('grimorioProfile');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data && data.scribeName && data.scribeName.trim()) {
+                        name = data.scribeName.trim();
+                    }
+                }
+            } catch (e) {
+                // Fail silently if profile data is malformed
+            }
+            greetingEl.textContent = `Welcome back, ${name}!`;
+        }
+
         :root {
             /* Dark mystical palette */
             --void-black: #0a0514;
@@ -1456,194 +1474,184 @@
         }
 
         .upload-btn {
-            background: linear-gradient(135deg, var(--thoth-blue), var(--arcane-glow));
-            color: white;
-        }
+                    <!-- Profile Tab -->
+                    <div id="profileTabContent" class="main-tab-content">
+                        <div class="profile-view-header">
+                            <h3 class="activity-title">👤 Character Profile</h3>
+                            <button class="toggle-edit-btn" onclick="toggleProfileEdit()" id="profileToggleBtn">
+                                ✏️ Edit Mode
+                            </button>
+                        </div>
+                        
+                        <!-- VIEW MODE -->
+                        <div id="profileViewMode" class="profile-view-mode">
+                            <div class="profile-display-card">
+                                <div class="profile-section-header">📸 Profile Photo</div>
+                                <div class="profile-photo-display">
+                                    <div class="profile-photo-preview" id="viewProfilePhoto">
+                                        📜
+                                    </div>
+                                    <div class="profile-photo-caption">Your character portrait</div>
+                                </div>
+                            </div>
 
-        .save-btn {
-            background: linear-gradient(135deg, var(--caerus-gold), var(--gold-glow));
-            color: var(--void-black);
-        }
+                            <div class="profile-display-card">
+                                <div class="profile-section-header">📋 Scribe Information</div>
+                                <div class="profile-info-grid">
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">🌙 Scribe Name</div>
+                                        <div class="profile-info-value" id="viewFullName">Unnamed Scribe</div>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">⚡ Patron Virtue</div>
+                                        <div class="profile-info-value" id="viewPatronVirtue">Thoth</div>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">✨ Motto</div>
+                                        <div class="profile-info-value" id="viewPersonalMotto" style="font-style: italic;">Amo ĉiujn, fidu malmultajn, difektu neniun</div>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">📅 Oath Date</div>
+                                        <div class="profile-info-value" id="viewOathDate">Not Set</div>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">🎯 Current Focus</div>
+                                        <div class="profile-info-value" id="viewCurrentFocus">Beginning the path of the Three Virtues</div>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">🏛️ Studiolo</div>
+                                        <div class="profile-info-value" id="viewOrigin">My Sacred Space</div>
+                                    </div>
+                                </div>
+                            </div>
 
-        .upload-btn:hover, .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(218, 165, 32, 0.6);
-        }
+                            <div class="profile-display-card">
+                                <div class="profile-section-header">📜 Oath & Backstory</div>
+                                <div class="profile-info-grid">
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">📜 Oath Date</div>
+                                        <div class="profile-info-value" id="viewOathDate">Not Set</div>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <div class="profile-info-label">🏡 Origin</div>
+                                        <div class="profile-info-value" id="viewOrigin">My Sacred Space</div>
+                                    </div>
+                                </div>
+                                <div class="profile-info-item" style="margin-top: 12px;">
+                                    <div class="profile-info-label">📖 Backstory</div>
+                                    <div class="profile-info-value" id="viewBackstory" style="line-height: 1.6;">No backstory yet.</div>
+                                </div>
+                            </div>
 
-        .upload-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+                            <div class="profile-display-card">
+                                <div class="profile-section-header">🎯 Goals</div>
+                                <ul class="goals-list" id="viewGoals">
+                                    <li>Set your first three goals</li>
+                                </ul>
+                            </div>
 
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+                            <div class="profile-display-card">
+                                <div class="profile-section-header">🏅 Specializations</div>
+                                <p style="color: var(--text-secondary); margin-bottom: 10px;">Unlocks at 500 total points (Journeyman rank)</p>
+                                <div class="spec-grid" id="profileSpecializations">
+                                    <div id="specGrid"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- EDIT MODE -->
+                        <div id="profileEditMode" class="profile-edit-mode">
+                            <div class="profile-form-grid">
+                                <div class="profile-form-card">
+                                    <div class="profile-section-header">📋 Character Details</div>
+                                    <label>Full Name</label>
+                                    <input type="text" id="editScribeName" placeholder="Your chosen name">
+                                    <label>Patron Virtue</label>
+                                    <select id="editPatronVirtue">
+                                        <option value="thoth">🌙 Thoth (Wisdom)</option>
+                                        <option value="maat">⚖️ Ma'at (Balance)</option>
+                                        <option value="caerus">⚡ Caerus (Timing)</option>
+                                    </select>
+                                    <label>Personal Motto</label>
+                                    <input type="text" id="editPersonalMotto" placeholder="Your guiding phrase">
+                                    <label>Oath Date</label>
+                                    <input type="date" id="editOathDate">
+                                </div>
 
-        #avatarFileInput {
-            display: none;
-        }
+                                <div class="profile-form-card">
+                                    <div class="profile-section-header">🏛️ Studiolo</div>
+                                    <label>Location</label>
+                                    <input type="text" id="editStudioloLocation" placeholder="e.g., Candlelit attic">
+                                    <label>Current Focus</label>
+                                    <input type="text" id="editCurrentFocus" placeholder="What are you working on?">
+                                    <label>Backstory</label>
+                                    <textarea id="editBackstory" rows="4" placeholder="Write your character's backstory"></textarea>
+                                </div>
 
-        /* Cloud Sync Styles */
-        .sync-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--mystic-purple);
-        }
+                                <div class="profile-form-card">
+                                    <div class="profile-section-header">🎯 Goals</div>
+                                    <label>List your goals (one per line)</label>
+                                    <textarea id="editGoals" rows="6" placeholder="Complete three lunar rituals
+Study planetary hours
+Write a protection charm"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-edit-actions">
+                                <button class="save-btn" onclick="saveProfileChanges()">💾 Save Profile</button>
+                                <button class="save-btn" style="background: transparent; border: 1px solid var(--maat-silver);" onclick="toggleProfileEdit()">✕ Cancel</button>
+                            </div>
+                        </div>
+                    </div>
 
-        .sync-tab {
-            flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: var(--text-secondary);
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+                    <!-- Achievements Tab -->
+                    <div id="achievementsTabContent" class="main-tab-content">
+                        <h3 class="activity-title">🏆 Achievements & Badges</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; padding: 20px;">
+                            <div style="text-align: center; padding: 15px; background: rgba(218, 165, 32, 0.1); border-radius: 8px; border: 2px solid rgba(218, 165, 32, 0.3);">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🌱</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">First Steps</div>
+                            </div>
+                            <div style="text-align: center; padding: 15px; background: rgba(192, 208, 232, 0.1); border-radius: 8px; border: 2px dashed rgba(192, 208, 232, 0.3);">
+                                <div style="font-size: 2rem; margin-bottom: 8px; opacity: 0.5;">⭐</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">Locked</div>
+                            </div>
+                        </div>
+                    </div>
 
-        .sync-tab.active {
-            color: var(--caerus-gold);
-            border-bottom-color: var(--caerus-gold);
-        }
+                    <!-- Reflection Journal Tab -->
+                    <div id="reflectionTabContent" class="main-tab-content">
+                        <h3 class="activity-title">📓 In-Character Reflection</h3>
+                        
+                        <!-- Display Mode -->
+                        <div id="reflectionDisplay" style="margin-bottom: 20px;">
+                            <div style="background: rgba(26, 35, 50, 0.6); padding: 20px; border-radius: 10px; border-left: 4px solid var(--caerus-bright); margin-bottom: 15px; min-height: 80px;">
+                                <p id="reflectionTextDisplay" style="font-style: italic; color: var(--maat-bright); line-height: 1.8;">
+                                    No reflection yet. Click 'Edit Reflection' to begin.
+                                </p>
+                            </div>
+                            <button class="save-btn-compact" onclick="document.getElementById('reflectionDisplay').style.display='none'; document.getElementById('reflectionEditor').style.display='block'; loadReflectionForEdit();">✏️ Edit Reflection</button>
+                        </div>
 
-        .sync-tab:hover {
-            color: var(--maat-silver);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .sync-code-display {
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--caerus-gold);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .sync-code {
-            font-family: 'Courier New', monospace;
-            font-size: 2rem;
-            color: var(--caerus-gold);
-            text-shadow: 0 0 20px var(--gold-glow);
-            letter-spacing: 5px;
-            margin: 15px 0;
-            user-select: all;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .qr-code-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            display: inline-block;
-            margin: 20px 0;
-        }
-
-        .qr-code-container canvas {
-            display: block;
-        }
-
-        .code-input-section {
-            margin: 20px 0;
-        }
-
-        .code-input {
-            width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 2px solid var(--mystic-purple);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Courier New', monospace;
-            font-size: 1.3rem;
-            text-align: center;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-
-        .code-input:focus {
-            outline: none;
-            border-color: var(--caerus-gold);
-            box-shadow: 0 0 20px rgba(218, 165, 32, 0.5);
-        }
-
-        .sync-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .sync-btn {
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .sync-btn.primary {
-            background: linear-gradient(135deg, var(--caerus-gold), var(--gold-glow));
-            color: var(--void-black);
-        }
-
-        .sync-btn.secondary {
-            background: linear-gradient(135deg, var(--mystic-purple), var(--royal-purple));
-            color: var(--text-primary);
-            border: 2px solid var(--mystic-glow);
-        }
-
-        .sync-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(139, 111, 216, 0.5);
-        }
-
-        .sync-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .info-text {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            font-style: italic;
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-            margin-left: 10px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
+                        <!-- Edit Mode -->
+                        <div id="reflectionEditor" style="display: none;">
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Formatting Options:</label>
+                                <div class="editor-toolbar">
+                                    <button onclick="formatReflection('bold')" title="Bold"><strong>B</strong></button>
+                                    <button onclick="formatReflection('italic')" title="Italic"><em>I</em></button>
+                                    <button onclick="formatReflection('underline')" title="Underline"><u>U</u></button>
+                                    <button onclick="formatReflection('strikethrough')" title="Strikethrough"><s>S</s></button>
+                                    <button onclick="formatReflection('removeFormat')" title="Clear Format">✕ Clear</button>
+                                </div>
+                            </div>
+                            <div class="editor-content" id="reflectionTextEditor" contenteditable="true" style="margin-bottom: 15px; min-height: 200px;"></div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="save-btn-compact" onclick="saveReflectionJournal()">💾 Save Reflection</button>
+                                <button class="save-btn-compact" onclick="document.getElementById('reflectionEditor').style.display='none'; document.getElementById('reflectionDisplay').style.display='block';" style="background: rgba(192, 208, 232, 0.3);">✕ Cancel</button>
+                            </div>
+                        </div>
+                    </div>
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -2827,12 +2835,11 @@
                     <!-- Activity Tab (Dashboard Section with Sub-tabs) -->
                     <div id="activityTabContent" class="main-tab-content active">
                         <!-- Activity Sub-tabs -->
-                        <div class="activity-subtabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid rgba(212, 175, 55, 0.2); flex-wrap: wrap;">
-                            <button class="activity-subtab active" onclick="switchActivityTab('feed', event)" data-tab="feed">🆕 Activity</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('daily', event)" data-tab="daily">📅 Daily Quests</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('weekly', event)" data-tab="weekly">📆 Weekly Quests</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('monthly', event)" data-tab="monthly">📊 Monthly Quests</button>
-                            <button class="activity-subtab" onclick="switchActivityTab('progress', event)" data-tab="progress">📈 Progress</button>
+                        <div class="main-tabs activity-subtabs">
+                            <button class="main-tab activity-subtab active" onclick="switchActivityTab('feed', event)" data-tab="feed">🆕 Activity</button>
+                            <button class="main-tab activity-subtab" onclick="switchActivityTab('daily', event)" data-tab="daily">📅 Daily Quests</button>
+                            <button class="main-tab activity-subtab" onclick="switchActivityTab('weekly', event)" data-tab="weekly">📆 Weekly Quests</button>
+                            <button class="main-tab activity-subtab" onclick="switchActivityTab('monthly', event)" data-tab="monthly">📊 Monthly Quests</button>
                         </div>
 
                         <div id="debugBadge" class="debug-badge">🐞 Debug: initializing…</div>
@@ -2894,33 +2901,6 @@
                             </div>
                         </div>
 
-                        <!-- Progress Tab -->
-                        <div id="progressTab" class="activity-sub-content" style="display: none;">
-                            <h3 class="activity-title">📈 Progress Overview</h3>
-                            <div class="progress-overview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                                <div class="progress-card" style="background: rgba(74, 125, 199, 0.15); padding: 15px; border-radius: 8px; border-left: 4px solid var(--thoth-blue);">
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">🌙 Thoth (Wisdom)</div>
-                                    <div style="font-size: 1.8rem; font-weight: 600;" id="progressThoth">0</div>
-                                    <div class="progress-bar" style="margin-top: 8px;">
-                                        <div class="progress-fill" id="progressThothBar" style="width: 0%; background: var(--thoth-blue);"></div>
-                                    </div>
-                                </div>
-                                <div class="progress-card" style="background: rgba(192, 208, 232, 0.15); padding: 15px; border-radius: 8px; border-left: 4px solid var(--maat-silver);">
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">⚖️ Ma'at (Balance)</div>
-                                    <div style="font-size: 1.8rem; font-weight: 600;" id="progressMaat">0</div>
-                                    <div class="progress-bar" style="margin-top: 8px;">
-                                        <div class="progress-fill" id="progressMaatBar" style="width: 0%; background: var(--maat-silver);"></div>
-                                    </div>
-                                </div>
-                                <div class="progress-card" style="background: rgba(218, 165, 32, 0.15); padding: 15px; border-radius: 8px; border-left: 4px solid var(--caerus-gold);">
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">⚡ Caerus (Timing)</div>
-                                    <div style="font-size: 1.8rem; font-weight: 600;" id="progressCaerus">0</div>
-                                    <div class="progress-bar" style="margin-top: 8px;">
-                                        <div class="progress-fill" id="progressCaerusBar" style="width: 0%; background: var(--caerus-gold);"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Profile Tab with Sub-tabs -->
@@ -5188,6 +5168,8 @@
             ],
             'you': [
                 { id: 'profile', label: '👤 Profile' },
+                { id: 'achievements', label: '🏆 Achievements' },
+                { id: 'reflection', label: '📓 Reflection Journal' },
                 { id: 'progress', label: '📊 Progress' }
             ]
         };
@@ -5213,6 +5195,7 @@
                 tabsContainer.innerHTML = '';
                 tabsContainer.style.display = 'none';
                 document.getElementById('activityTabContent').classList.add('active');
+                updateActivityGreeting();
 
                 // Ensure quests and activity feed are initialized when switching to Dashboard
                 try {
@@ -5270,6 +5253,8 @@
                 loadNotesCompact();
             } else if (tabName === 'toolkit') {
                 loadToolkitState();
+            } else if (tabName === 'reflection') {
+                loadReflectionForView();
             }
         }
 
@@ -5303,7 +5288,7 @@
             
             // Define tabs for each section
             const sectionTabs = {
-                dashboard: `<span class="section-subtitle">📋 Recent Activity Feed</span>`,
+                dashboard: `<span class="section-subtitle" id="activityGreeting">Welcome back, Scribe!</span>`,
                 study: `
                     <button class="main-tab active" onclick="switchMainTab('notes', event)">📝 Notes</button>
                     <button class="main-tab" onclick="switchMainTab('workinglog', event)">🌿 Working Log</button>
@@ -5323,12 +5308,17 @@
                 `,
                 you: `
                     <button class="main-tab active" onclick="switchMainTab('profile', event)">👤 Profile</button>
+                    <button class="main-tab" onclick="switchMainTab('achievements', event)">🏆 Achievements</button>
+                    <button class="main-tab" onclick="switchMainTab('reflection', event)">📓 Reflection Journal</button>
                     <button class="main-tab" onclick="switchMainTab('progress', event)">📊 Progress</button>
                 `
             };
             
             // Update tabs
             tabsContainer.innerHTML = sectionTabs[section] || '';
+            if (section === 'dashboard') {
+                updateActivityGreeting();
+            }
             
             // Define default tab for each section
             const defaultTabs = {
@@ -6180,8 +6170,7 @@
                 'feed': 'activityTab',
                 'daily': 'dailyTab',
                 'weekly': 'weeklyTab',
-                'monthly': 'monthlyTab',
-                'progress': 'progressTab'
+                'monthly': 'monthlyTab'
             };
             const tabId = tabMap[tabName];
             const tab = document.getElementById(tabId);
@@ -6194,10 +6183,6 @@
                 event.target.classList.add('active');
             }
             
-            // Update progress display when switching to progress tab
-            if (tabName === 'progress') {
-                updateProgressDisplay();
-            }
         }
 
         // Switch Profile Sub-tabs
