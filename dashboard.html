@@ -2792,46 +2792,51 @@
 
                     <!-- Activity Tab (Dashboard Section) -->
                     <div id="activityTabContent" class="main-tab-content active">
-                        <h3 class="activity-title">🆕 Recent Activity</h3>
+                        <!-- Quests Section -->
+                        <h3 class="activity-title">⭐ Daily Quests & Challenges</h3>
                         
+                        <!-- Daily Quests -->
+                        <div class="quest-section">
+                            <div class="quest-section-header">📅 Daily Quests</div>
+                            <div class="quest-timer">
+                                <div class="quest-timer-label">Resets in</div>
+                                <div class="quest-timer-value" id="dailyTimer">--:--:--</div>
+                            </div>
+                            <div class="quest-grid" id="dailyQuests">
+                                <!-- Daily quests will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Weekly Quests -->
+                        <div class="quest-section">
+                            <div class="quest-section-header">📆 Weekly Quests</div>
+                            <div class="quest-timer">
+                                <div class="quest-timer-label">Resets in</div>
+                                <div class="quest-timer-value" id="weeklyTimer">--:--:--</div>
+                            </div>
+                            <div class="quest-grid" id="weeklyQuests">
+                                <!-- Weekly quests will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Monthly Quests -->
+                        <div class="quest-section">
+                            <div class="quest-section-header">📊 Monthly Quests</div>
+                            <div class="quest-timer">
+                                <div class="quest-timer-label">Resets in</div>
+                                <div class="quest-timer-value" id="monthlyTimer">--:--:--</div>
+                            </div>
+                            <div class="quest-grid" id="monthlyQuests">
+                                <!-- Monthly quests will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Activity Feed Section -->
+                        <h3 class="activity-title" style="margin-top: 40px;">🆕 Recent Activity</h3>
                         <div id="activityFeed">
-                            <div class="activity-item">
-                                <div class="activity-icon">🌿</div>
+                            <div class="activity-item" style="opacity: 0.5; text-align: center; padding: 30px;">
                                 <div class="activity-content">
-                                    <div class="activity-text">Completed Protection Tisane brewing</div>
-                                    <div class="activity-time">2 hours ago • +50 XP • +10 Thoth</div>
-                                </div>
-                            </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon">🌙</div>
-                                <div class="activity-content">
-                                    <div class="activity-text">Charged lunar water under Full Moon</div>
-                                    <div class="activity-time">Yesterday • +75 XP • +15 Caerus</div>
-                                </div>
-                            </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon">⚖️</div>
-                                <div class="activity-content">
-                                    <div class="activity-text">Practiced daily balance meditation</div>
-                                    <div class="activity-time">Yesterday • +30 XP • +12 Ma'at</div>
-                                </div>
-                            </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon">📚</div>
-                                <div class="activity-content">
-                                    <div class="activity-text">Studied Materia Medica: Rosemary properties</div>
-                                    <div class="activity-time">3 days ago • +40 XP • +20 Thoth</div>
-                                </div>
-                            </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon">🛡️</div>
-                                <div class="activity-content">
-                                    <div class="activity-text">Created Evil Eye protective talisman</div>
-                                    <div class="activity-time">5 days ago • +100 XP • +15 Ma'at</div>
+                                    <div class="activity-text">No activities yet. Complete quests, write journal entries, or log workings to see your activity here!</div>
                                 </div>
                             </div>
                         </div>
@@ -3027,47 +3032,6 @@
                         <!-- Notes Display -->
                         <div class="notes-compact" id="notesCompact">
                             <!-- Notes will be inserted here -->
-                        </div>
-                    </div>
-
-                    <!-- Quests Tab -->
-                    <div id="questsTabContent" class="main-tab-content">
-                        <h3 class="activity-title">⭐ Quests & Challenges</h3>
-
-                        <!-- Daily Quests -->
-                        <div class="quest-section">
-                            <div class="quest-section-header">📅 Daily Quests</div>
-                            <div class="quest-timer">
-                                <div class="quest-timer-label">Resets in</div>
-                                <div class="quest-timer-value" id="dailyTimer">--:--:--</div>
-                            </div>
-                            <div class="quest-grid" id="dailyQuests">
-                                <!-- Daily quests will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Weekly Quests -->
-                        <div class="quest-section">
-                            <div class="quest-section-header">📆 Weekly Quests</div>
-                            <div class="quest-timer">
-                                <div class="quest-timer-label">Resets in</div>
-                                <div class="quest-timer-value" id="weeklyTimer">--:--:--</div>
-                            </div>
-                            <div class="quest-grid" id="weeklyQuests">
-                                <!-- Weekly quests will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Monthly Quests -->
-                        <div class="quest-section">
-                            <div class="quest-section-header">📊 Monthly Quests</div>
-                            <div class="quest-timer">
-                                <div class="quest-timer-label">Resets in</div>
-                                <div class="quest-timer-value" id="monthlyTimer">--:--:--</div>
-                            </div>
-                            <div class="quest-grid" id="monthlyQuests">
-                                <!-- Monthly quests will be populated here -->
-                            </div>
                         </div>
                     </div>
 
@@ -6252,6 +6216,15 @@
                 window.grimorioRPG.awardExperience(virtue, experience);
             }
             
+            // Get quest name for activity feed
+            const questData = getQuestData();
+            const allQuests = [...questData.daily, ...questData.weekly, ...questData.monthly];
+            const quest = allQuests.find(q => q.id === questId);
+            const questName = quest ? quest.name : 'Quest';
+            
+            // Add to activity feed
+            addActivityFeedItem(quest.emoji, `Completed ${questName}`, `+${experience} ${virtue.toUpperCase()} XP`);
+            
             // Update UI
             const card = document.querySelector(`[data-quest-id="${questId}"]`);
             if (card) {
@@ -6335,6 +6308,86 @@
             const seconds = Math.floor((ms % (1000 * 60)) / 1000);
             
             element.textContent = `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Activity Feed Functions
+        function addActivityFeedItem(icon, text, details) {
+            // Load existing activities
+            let activities = JSON.parse(localStorage.getItem('activityFeed') || '[]');
+            
+            // Add new activity at the beginning
+            activities.unshift({
+                icon: icon,
+                text: text,
+                details: details,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep only last 20 activities
+            if (activities.length > 20) {
+                activities = activities.slice(0, 20);
+            }
+            
+            // Save back to localStorage
+            localStorage.setItem('activityFeed', JSON.stringify(activities));
+            
+            // Refresh display
+            displayActivityFeed();
+        }
+
+        function displayActivityFeed() {
+            const activities = JSON.parse(localStorage.getItem('activityFeed') || '[]');
+            const feedContainer = document.getElementById('activityFeed');
+            
+            if (!feedContainer) return;
+            
+            if (activities.length === 0) {
+                feedContainer.innerHTML = `
+                    <div class="activity-item" style="opacity: 0.5; text-align: center; padding: 30px;">
+                        <div class="activity-content">
+                            <div class="activity-text">No activities yet. Complete quests, write journal entries, or log workings to see your activity here!</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            feedContainer.innerHTML = activities.map(activity => {
+                const timestamp = new Date(activity.timestamp);
+                const timeAgo = getTimeAgo(timestamp);
+                
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon">${activity.icon}</div>
+                        <div class="activity-content">
+                            <div class="activity-text">${activity.text}</div>
+                            <div class="activity-time">${timeAgo} • ${activity.details}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            
+            const days = Math.floor(hours / 24);
+            if (days === 1) return 'Yesterday';
+            if (days < 7) return `${days} days ago`;
+            
+            const weeks = Math.floor(days / 7);
+            if (weeks === 1) return '1 week ago';
+            if (weeks < 4) return `${weeks} weeks ago`;
+            
+            return date.toLocaleDateString();
         }
 
         function updateToolkitProgress() {
@@ -6458,6 +6511,9 @@
             
             // Initialize Quest System
             initializeQuestSystem();
+            
+            // Display Activity Feed
+            displayActivityFeed();
             
             // Check if auto-sync is enabled
             if (localStorage.getItem('autoSyncEnabled') === 'true') {

@@ -4,5 +4,11 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"haselerdev.aiquickfix.apiKey": "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"
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": []
+	}
 }
